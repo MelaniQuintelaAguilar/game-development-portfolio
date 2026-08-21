@@ -271,8 +271,7 @@ Cada proyecto explora un aspecto diferente del diseño y desarrollo de videojueg
     <kbd>📖 DOCUMENTACIÓN</kbd>
   </a>
 </p>
-  <a href="juegos/02-ecofest/">📂 Ver proyecto</a>
-</p>
+  
 
 
 <a id="nutrifest"></a>
@@ -340,8 +339,7 @@ Cada proyecto explora un aspecto diferente del diseño y desarrollo de videojueg
     <kbd>📖 DOCUMENTACIÓN</kbd>
   </a>
 </p>
-  <a href="juegos/03-nutrifest/">📂 Ver proyecto</a>
-</p>
+ 
 
 
 <a id="waterfest"></a>

@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edumundo - V7 (Nivel Extremo)</title>
+    <style>
+        body { margin: 0; padding: 0; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        #mainWrapper { display: flex; gap: 30px; align-items: center; justify-content: center; flex-wrap: wrap; }
+        
+        #instructionsBox { background: rgba(255, 255, 255, 0.95); color: #2c3e50; padding: 30px; border-radius: 15px; font-size: 18px; text-align: left; border: 5px solid #f39c12; box-shadow: 0 15px 30px rgba(0,0,0,0.5); line-height: 1.6; min-width: 220px; }
+        .inst-title { font-weight: 900; color: #d35400; margin-bottom: 10px; font-size: 22px; text-transform: uppercase; }
+        .inst-item { margin-bottom: 15px; font-weight: bold; }
+
+        #gameContainer { position: relative; width: 800px; height: 600px; background: linear-gradient(to bottom, #87CEEB 0%, #e0f6ff 100%); border: 6px solid #2c3e50; border-radius: 15px; overflow: hidden; box-shadow: 0 15px 30px rgba(0,0,0,0.6); }
+        canvas { display: block; }
+        #uiLayer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        
+        .hud { display: flex; justify-content: space-between; padding: 20px; font-size: 26px; font-weight: 900; color: #2c3e50; text-shadow: 2px 2px 0px white; }
+        
+        .controls { position: absolute; bottom: 20px; right: 20px; pointer-events: auto; display: flex; gap: 10px; }
+        .controlBtn { padding: 10px 15px; font-size: 16px; font-weight: bold; cursor: pointer; background: #34495e; color: white; border: 2px solid white; border-radius: 8px; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .controlBtn:hover { background: #2c3e50; transform: scale(1.05); }
+        .controlBtn:active { transform: scale(0.95); }
+        #btnRestart { background: #c0392b; }
+        #btnRestart:hover { background: #96281b; }
+
+        #questionDisplay { position: absolute; top: 80px; width: 100%; text-align: center; font-size: 45px; font-weight: 900; color: #fff; text-shadow: 3px 3px 6px rgba(0,0,0,0.7); }
+        #messageBox { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, #2c3e50, #34495e); color: white; padding: 40px; border-radius: 20px; text-align: center; display: none; font-size: 35px; border: 4px solid #f1c40f; pointer-events: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.8); z-index: 10; }
+        
+        #pauseScreen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); color: white; display: none; justify-content: center; align-items: center; font-size: 50px; font-weight: bold; z-index: 5; text-shadow: 2px 2px 10px black; }
+
+        .actionBtn { margin-top: 25px; padding: 15px 30px; font-size: 22px; font-weight: bold; cursor: pointer; background: linear-gradient(to bottom, #e74c3c, #c0392b); color: white; border: none; border-radius: 10px; box-shadow: 0 5px 10px rgba(0,0,0,0.3); transition: transform 0.1s; }
+        .actionBtn:hover { transform: scale(1.05); }
+        .actionBtn:active { transform: scale(0.95); }
+    </style>
+</head>
+<body>
+
+<div id="mainWrapper">
+    <div id="instructionsBox">
+        <div class="inst-title">🎯 Objetivo:</div>
+        <div class="inst-item">Salta y choca contra el bloque de la respuesta correcta.</div>
+        <div class="inst-title">⌨️ Controles:</div>
+        <div class="inst-item">⬅️ Mover a la Izquierda</div>
+        <div class="inst-item">➡️ Mover a la Derecha</div>
+        <div class="inst-item">⬆️ Saltar</div>
+        <div class="inst-title">⚠️ Atención:</div>
+        <div class="inst-item" style="color: #c0392b;">¡El juego se volverá MÁS DÍFICIL y rápido mientras más puntos ganes!</div>
+    </div>
+
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <div id="uiLayer">
+            <div class="hud">
+                <div>Pregunta: <span id="qCount">1</span> / 10</div>
+                <div>Puntaje: <span id="score">0</span></div>
+            </div>
+            <div id="questionDisplay">¿Cuánto es...?</div>
+            
+            <div class="controls">
+                <button id="btnPause" class="controlBtn">Pausar</button>
+                <button id="btnRestart" class="controlBtn">Reiniciar</button>
+            </div>
+            <div id="pauseScreen">JUEGO PAUSADO</div>
+            <div id="messageBox">
+                <div id="feedbackText">¡Correcto!</div>
+                <button id="nextBtn" class="actionBtn">Siguiente</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    class MathEngine {
+        static generateQuestion(currentScore) {
+            let ops, op, a, b, answer;
+
+            if (currentScore < 3) {
+                ops = ['+', '-'];
+                op = ops[Math.floor(Math.random() * ops.length)];
+                if (op === '+') { a = Math.floor(Math.random() * 10) + 1; b = Math.floor(Math.random() * 10) + 1; answer = a + b; }
+                else { a = Math.floor(Math.random() * 10) + 5; b = Math.floor(Math.random() * 5) + 1; answer = a - b; }
+            } 
+            else if (currentScore < 7) {
+                ops = ['+', '-', '*'];
+                op = ops[Math.floor(Math.random() * ops.length)];
+                if (op === '+') { a = Math.floor(Math.random() * 40) + 10; b = Math.floor(Math.random() * 40) + 10; answer = a + b; }
+                else if (op === '-') { a = Math.floor(Math.random() * 30) + 20; b = Math.floor(Math.random() * 15) + 1; answer = a - b; }
+                else { a = Math.floor(Math.random() * 8) + 2; b = Math.floor(Math.random() * 5) + 2; answer = a * b; }
+            } 
+            else {
+                ops = ['*', '/'];
+                op = ops[Math.floor(Math.random() * ops.length)];
+                if (op === '*') { a = Math.floor(Math.random() * 10) + 3; b = Math.floor(Math.random() * 10) + 3; answer = a * b; }
+                else { b = Math.floor(Math.random() * 9) + 2; answer = Math.floor(Math.random() * 10) + 2; a = b * answer; }
+            }
+
+            let answers = [answer];
+            while (answers.length < 4) {
+                let fake = answer + (Math.floor(Math.random() * 15) - 7);
+                if (fake !== answer && !answers.includes(fake) && fake >= 0) answers.push(fake);
+            }
+            return { text: `${a} ${op} ${b}`, correct: answer, options: answers.sort(() => Math.random() - 0.5) };
+        }
+    }
+
+    class PhysicsEngine {
+        static checkCollision(rect1, rect2) {
+            return (rect1.x < rect2.x + rect2.width && rect1.x + rect1.width > rect2.x &&
+                    rect1.y < rect2.y + rect2.height && rect1.y + rect1.height > rect2.y);
+        }
+    }
+
+    class Player {
+        constructor() { this.width = 44; this.height = 44; this.reset(); this.speed = 6; this.jumpForce = -20; this.gravity = 0.8; }
+        reset() { this.x = 378; this.y = 490; this.vx = 0; this.vy = 0; this.isGrounded = false; }
+        update(keys) {
+            if (keys['ArrowLeft']) this.vx = -this.speed;
+            else if (keys['ArrowRight']) this.vx = this.speed;
+            else this.vx = 0;
+
+            if (keys['ArrowUp'] && this.isGrounded) { this.vy = this.jumpForce; this.isGrounded = false; }
+
+            this.vy += this.gravity;
+            this.x += this.vx;
+            this.y += this.vy;
+
+            if (this.x < 0) this.x = 0;
+            if (this.x + this.width > 800) this.x = 800 - this.width;
+            if (this.y + this.height > 550) { this.y = 550 - this.height; this.vy = 0; this.isGrounded = true; }
+        }
+        draw(ctx) {
+            ctx.fillStyle = '#e74c3c';
+            ctx.shadowColor = 'rgba(0,0,0,0.4)';
+            ctx.shadowBlur = 10;
+            ctx.shadowOffsetY = 5;
+            ctx.beginPath();
+            ctx.roundRect(this.x, this.y, this.width, this.height, 12);
+            ctx.fill();
+            
+            ctx.shadowColor = 'transparent';
+            
+            ctx.fillStyle = 'white';
+            ctx.beginPath(); ctx.arc(this.x + 12, this.y + 16, 6, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(this.x + 32, this.y + 16, 6, 0, Math.PI * 2); ctx.fill();
+            
+            ctx.fillStyle = 'black';
+            ctx.beginPath(); ctx.arc(this.x + 14, this.y + 16, 3, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(this.x + 34, this.y + 16, 3, 0, Math.PI * 2); ctx.fill();
+        }
+    }
+
+    class Block {
+        constructor(x, y, value, isCorrect, score) { 
+            this.x = x; this.y = y; this.height = 60; 
+            this.value = value; this.isCorrect = isCorrect; this.active = true; 
+            this.startX = x;
+            this.startY = y;
+            
+            // Configurador de Dificultad Dinámica Extrema
+            if (score >= 3 && score < 7) {
+                // Nivel Medio: Ancho normal, velocidad moderada en X
+                this.width = 110;
+                let directionX = Math.random() > 0.5 ? 1 : -1;
+                this.speedX = directionX * (score * 0.5); 
+                this.speedY = 0;
+            } else if (score >= 7) {
+                // Nivel Difícil: Bloque angosto, velocidad rápida en X y en Y
+                this.width = 60; // ¡Casi la mitad de tamaño!
+                let directionX = Math.random() > 0.5 ? 1 : -1;
+                let directionY = Math.random() > 0.5 ? 1 : -1;
+                this.speedX = directionX * (score * 0.7);
+                this.speedY = directionY * (score * 0.3);
+            } else {
+                // Nivel Fácil: Todo estático
+                this.width = 110;
+                this.speedX = 0;
+                this.speedY = 0;
+            }
+        }
+
+        update() {
+            // Movimiento en X
+            if (this.speedX !== 0) {
+                this.x += this.speedX;
+                if (this.x > this.startX + 35 || this.x < this.startX - 35) {
+                    this.speedX *= -1; 
+                }
+            }
+            // Movimiento en Y (Vertical)
+            if (this.speedY !== 0) {
+                this.y += this.speedY;
+                if (this.y > this.startY + 20 || this.y < this.startY - 20) {
+                    this.speedY *= -1; 
+                }
+            }
+        }
+
+        draw(ctx) {
+            if (!this.active) return;
+            let gradient = ctx.createLinearGradient(this.x, this.y, this.x, this.y + this.height);
+            gradient.addColorStop(0, '#f1c40f');
+            gradient.addColorStop(1, '#f39c12');
+            
+            ctx.fillStyle = gradient;
+            ctx.shadowColor = 'rgba(0,0,0,0.3)';
+            ctx.shadowBlur = 8;
+            ctx.shadowOffsetY = 4;
+            ctx.beginPath();
+            ctx.roundRect(this.x, this.y, this.width, this.height, 8);
+            ctx.fill();
+            
+            ctx.strokeStyle = '#d35400';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            ctx.shadowColor = 'transparent'; 
+            ctx.fillStyle = '#fff'; 
+            ctx.font = 'bold 30px Arial'; 
+            ctx.textAlign = 'center'; 
+            ctx.textBaseline = 'middle';
+            ctx.shadowColor = 'rgba(0,0,0,0.5)';
+            ctx.shadowBlur = 4;
+            // El texto se mantiene perfectamente centrado sin importar el ancho
+            ctx.fillText(this.value, this.x + (this.width / 2), this.y + (this.height / 2));
+            ctx.shadowColor = 'transparent';
+        }
+    }
+
+    class GameEngine {
+        constructor() {
+            this.canvas = document.getElementById('gameCanvas');
+            this.ctx = this.canvas.getContext('2d');
+            this.player = new Player();
+            this.keys = {};
+            this.blocks = [];
+            this.score = 0;
+            this.questionCount = 1;
+            this.maxQuestions = 10;
+            this.state = 'PLAYING'; 
+            
+            this.uiQuestion = document.getElementById('questionDisplay');
+            this.uiMessage = document.getElementById('messageBox');
+            this.uiFeedback = document.getElementById('feedbackText');
+            this.uiBtn = document.getElementById('nextBtn');
+            this.uiPauseScreen = document.getElementById('pauseScreen');
+            
+            this.btnPause = document.getElementById('btnPause');
+            this.btnRestart = document.getElementById('btnRestart');
+            
+            this.setupInputs();
+            this.setupButtons();
+            
+            this.uiBtn.addEventListener('click', () => this.nextState());
+            this.loadQuestion();
+            this.loop();
+        }
+
+        setupInputs() {
+            window.addEventListener('keydown', e => this.keys[e.code] = true);
+            window.addEventListener('keyup', e => this.keys[e.code] = false);
+        }
+
+        setupButtons() {
+            this.btnRestart.addEventListener('click', () => location.reload());
+            this.btnPause.addEventListener('click', () => {
+                if (this.state === 'PLAYING') {
+                    this.state = 'PAUSED';
+                    this.uiPauseScreen.style.display = 'flex';
+                    this.btnPause.innerText = 'Reanudar';
+                } else if (this.state === 'PAUSED') {
+                    this.state = 'PLAYING';
+                    this.uiPauseScreen.style.display = 'none';
+                    this.btnPause.innerText = 'Pausar';
+                }
+            });
+        }
+
+        loadQuestion() {
+            if (this.questionCount > this.maxQuestions) { this.endGame(); return; }
+            
+            document.getElementById('qCount').innerText = this.questionCount;
+            this.player.reset();
+            
+            let q = MathEngine.generateQuestion(this.score);
+            this.uiQuestion.innerText = `¿Cuánto es ${q.text}?`;
+            
+            this.blocks = [];
+            // Ajustamos la posición inicial para que los bloques quepan bien incluso al moverse
+            let startX = 60;
+            for(let i=0; i<4; i++) {
+                this.blocks.push(new Block(startX + (i * 180), 320, q.options[i], q.options[i] === q.correct, this.score));
+            }
+            this.state = 'PLAYING';
+            this.btnPause.style.display = 'block'; 
+        }
+
+        handleCollision(block) {
+            this.state = 'FEEDBACK';
+            this.btnPause.style.display = 'none'; 
+            block.active = false;
+            
+            if (block.isCorrect) {
+                this.score++;
+                document.getElementById('score').innerText = this.score;
+                this.uiFeedback.innerText = "¡Súper Correcto! ✨";
+                this.uiFeedback.style.color = "#f1c40f";
+            } else {
+                this.uiFeedback.innerText = "¡Ups! Incorrecto 😢";
+                this.uiFeedback.style.color = "#e74c3c";
+            }
+            this.uiMessage.style.display = "block";
+            
+            if (this.questionCount >= this.maxQuestions) this.uiBtn.innerText = "Ver Resultado Final";
+            else this.uiBtn.innerText = "Siguiente Pregunta";
+        }
+
+        nextState() {
+            this.uiMessage.style.display = "none";
+            if (this.questionCount >= this.maxQuestions) {
+                this.endGame();
+            } else {
+                this.questionCount++;
+                this.loadQuestion();
+            }
+        }
+
+        endGame() {
+            this.state = 'END';
+            this.btnPause.style.display = 'none'; 
+            this.uiQuestion.innerText = "¡Juego Terminado!";
+            this.uiFeedback.innerHTML = `Lograste:<br><br>🏆 ${this.score} / 10 🏆`;
+            this.uiFeedback.style.color = "white";
+            this.uiBtn.innerText = "Volver a jugar";
+            this.uiBtn.onclick = () => location.reload();
+            this.uiMessage.style.display = "block";
+        }
+
+        update() {
+            if (this.state !== 'PLAYING') return;
+            
+            this.player.update(this.keys);
+            
+            for (let block of this.blocks) {
+                block.update(); 
+                if (block.active && PhysicsEngine.checkCollision(this.player, block)) {
+                    this.handleCollision(block);
+                }
+            }
+        }
+
+        draw() {
+            if(this.state === 'PAUSED') return; 
+
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            
+            this.ctx.fillStyle = '#2ecc71';
+            this.ctx.fillRect(0, 550, 800, 50);
+            this.ctx.fillStyle = '#27ae60';
+            this.ctx.fillRect(0, 560, 800, 40);
+            
+            this.player.draw(this.ctx);
+            for (let block of this.blocks) block.draw(this.ctx);
+        }
+
+        loop = () => {
+            this.update();
+            this.draw();
+            requestAnimationFrame(this.loop);
+        }
+    }
+
+    window.onload = () => new GameEngine();
+</script>
+</body>
+</html>

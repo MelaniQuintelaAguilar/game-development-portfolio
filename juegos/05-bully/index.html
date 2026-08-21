@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Detrás de la pantalla — Prototipo 2.5D</title>
+<style>
+:root{
+ --bg:#05070c;--panel:rgba(8,13,22,.91);--line:#34465f;--text:#f5f7fb;
+ --muted:#a6b4c7;--violet:#8b6cff;--cyan:#55d8cc;--good:#76d477;--bad:#e76d76;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070c;color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif}
+button{font:inherit}
+#game{position:fixed;inset:0;background:#05070c}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.topbar{position:absolute;top:0;left:0;right:0;height:64px;z-index:20;display:flex;align-items:center;justify-content:space-between;
+padding:0 20px;background:linear-gradient(180deg,rgba(4,7,13,.95),rgba(4,7,13,.68));border-bottom:1px solid rgba(90,112,142,.32);backdrop-filter:blur(12px)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900}.mark{width:37px;height:37px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(135deg,#8d61ff,#4b92ff);box-shadow:0 8px 30px #0009}
+.topRight{display:flex;gap:8px;align-items:center}.pill,.pauseBtn{border:1px solid #34465f;background:#0d1725d9;color:#c9d5e4;border-radius:12px;padding:9px 12px;font-size:11px}
+.pauseBtn{width:43px;height:43px;padding:0;font-size:18px;cursor:pointer}.pauseBtn:hover{border-color:#8b6cff}
+.hudLeft{position:absolute;top:82px;left:20px;z-index:15;width:220px;padding:13px 14px;border-radius:15px;border:1px solid #304159;background:#07101bdd;box-shadow:0 12px 40px #0007}
+.hudTitle{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#94a5bb;margin-bottom:9px}.barRow{font-size:10px;color:#aab7c8;display:flex;justify-content:space-between;margin:4px 0}.bar{height:5px;background:#1b2839;border-radius:10px;overflow:hidden;margin-bottom:7px}.bar i{display:block;height:100%;transition:.35s}.c{background:#9b76ff}.t{background:#54b9df}.r{background:#76d477}
+.sceneInfo{position:absolute;top:82px;right:20px;z-index:15;width:260px;padding:13px 14px;border:1px solid #304159;border-radius:15px;background:#07101bdd;box-shadow:0 12px 40px #0007}
+.sceneInfo .small{font-size:9px;letter-spacing:1.4px;text-transform:uppercase;color:#93a3b7}.sceneInfo strong{display:block;font-size:15px;margin-top:4px}.sceneInfo p{margin:6px 0 0;color:#b5c2d2;font-size:11px;line-height:1.45}
+.controls{position:absolute;bottom:22px;left:20px;z-index:15;display:flex;gap:5px;align-items:center}.key{width:35px;height:35px;display:grid;place-items:center;border:1px solid #40526a;background:#091321dc;border-radius:9px;font-size:11px;color:#dce5f0;box-shadow:0 5px 18px #0007}.key.active{background:#7d5ce5;border-color:#b29cff;transform:translateY(-2px)}
+.interact{position:absolute;bottom:24px;right:20px;z-index:15;padding:9px 12px;border-radius:11px;border:1px solid #3d536f;background:#091321df;color:#d6e2ef;font-size:10px;display:none}
+.interact.show{display:block}
+.dialogue{position:absolute;z-index:25;left:5%;right:5%;bottom:22px;display:grid;grid-template-columns:90px 1fr;gap:12px;align-items:end;pointer-events:none}
+.avatar{height:90px;border-radius:17px;border:1px solid #42546e;background:linear-gradient(180deg,#1c2a3f,#0d1522);position:relative;overflow:hidden;box-shadow:0 12px 35px #0009}
+.avatar:after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,#ffffff08,transparent 45%,#0004)}
+.aHead{position:absolute;width:44px;height:49px;left:23px;top:20px;border-radius:45%;background:#c88768}.aHair{position:absolute;width:55px;height:39px;left:18px;top:10px;border-radius:50% 50% 25% 25%;background:#17141b;z-index:2}.aBody{position:absolute;width:72px;height:55px;left:9px;bottom:-2px;border-radius:32px 32px 0 0;background:#304761}
+.dialog{pointer-events:auto;background:rgba(7,12,20,.95);border:1px solid #3d506a;border-radius:18px;padding:14px 16px;box-shadow:0 18px 60px #000a}
+.speaker{font-size:11px;font-weight:900;color:#c8b8ff;margin-bottom:5px}.dialogText{font-size:14px;line-height:1.52;min-height:42px;color:#edf2f8}
+.choices{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.choice{border:1px solid #3b4d66;background:#17263a;color:#fff;border-radius:10px;padding:9px 12px;font-size:11px;cursor:pointer;text-align:left;transition:.15s}.choice:hover{border-color:#a084ff;transform:translateY(-1px);background:#213650}.choice small{display:block;color:#9facbd;margin-top:3px}
+.phone{position:absolute;right:25px;bottom:95px;width:175px;height:305px;z-index:18;border:5px solid #6e7b90;border-radius:25px;background:#060a10;box-shadow:0 20px 55px #000a;transform:translateY(20px) rotate(2deg);opacity:0;pointer-events:none;transition:.25s}
+.phone.show{opacity:1;transform:translateY(0) rotate(2deg)}.phoneScreen{height:100%;margin:10px;border-radius:14px;background:linear-gradient(180deg,#142236,#0d1725);padding:9px;font-size:10px;overflow:hidden}.pTop{display:flex;align-items:center;gap:6px;padding-bottom:8px;border-bottom:1px solid #2b3b51}.pIcon{width:24px;height:24px;border-radius:50%;background:#7657b4;display:grid;place-items:center}.post{margin-top:10px;background:#1b2b40;border-radius:9px;padding:9px;line-height:1.4}.react{color:#91a0b4;margin-top:8px}
+.pause,.start,.ending{position:fixed;inset:0;z-index:100;background:rgba(2,4,9,.79);backdrop-filter:blur(10px);display:grid;place-items:center;padding:25px}
+.pause.hidden,.start.hidden,.ending.hidden{display:none}
+.card{width:min(490px,92vw);padding:30px;border:1px solid #40536d;border-radius:23px;background:linear-gradient(180deg,#121d2d,#0a111c);box-shadow:0 25px 100px #000b;text-align:center}
+.card h2{font-size:40px;margin:6px 0 10px}.card p{color:#aab7c8;line-height:1.65;font-size:13px}.btn{border:0;border-radius:12px;padding:12px 18px;margin:5px;background:linear-gradient(135deg,#8b5cf6,#536dff);color:white;font-weight:850;cursor:pointer;box-shadow:0 10px 25px #0005}.btn.secondary{background:#17263a;border:1px solid #3a4d67}.btn:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.startCard{width:min(1050px,95vw);display:grid;grid-template-columns:1.1fr .9fr;gap:35px;align-items:center}.tag{font-size:10px;letter-spacing:1.6px;text-transform:uppercase;color:#bdaeff}.startCard h1{font-size:clamp(48px,7vw,86px);line-height:.88;letter-spacing:-5px;margin:14px 0;background:linear-gradient(110deg,#fff,#bcaaff,#70ded2);color:transparent;background-clip:text}.startCard p{max-width:650px;color:#aab7c8;line-height:1.7}
+.hero{height:490px;border:1px solid #304159;border-radius:26px;position:relative;overflow:hidden;background:radial-gradient(circle at 70% 25%,#403466,#141d2e 50%,#080c13)}
+.hero:before{content:"";position:absolute;inset:0;background:linear-gradient(145deg,#ffffff0c,transparent 35%,#0006)}.heroFloor{position:absolute;left:-10%;right:-10%;bottom:-5%;height:46%;background:linear-gradient(170deg,#344254,#151c27);clip-path:polygon(0 20%,100% 0,100% 100%,0 100%)}
+.bigPerson{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);width:230px;height:420px}.bigHead{position:absolute;left:68px;top:34px;width:94px;height:115px;border-radius:46%;background:#c88768;z-index:2}.bigHair{position:absolute;left:55px;top:14px;width:122px;height:132px;border-radius:53% 47% 45% 55%;background:#15131a;z-index:4}.bigBody{position:absolute;left:30px;top:140px;width:170px;height:245px;border-radius:55px 55px 15px 15px;background:linear-gradient(135deg,#3e5772,#25374d)}.bigArm{position:absolute;top:196px;width:55px;height:160px;background:#2f465f;border-radius:40px}.ba1{left:20px;transform:rotate(13deg)}.ba2{right:20px;transform:rotate(-13deg)}.bigPhone{position:absolute;left:77px;top:218px;width:76px;height:125px;background:#080b11;border:3px solid #64748a;border-radius:14px;z-index:6}.bigNeck{position:absolute;left:102px;top:132px;width:28px;height:30px;background:#b9785f}
+.endCard{width:min(850px,94vw);text-align:center}.endArt{height:260px;border-radius:20px;border:1px solid #33465f;position:relative;overflow:hidden;background:linear-gradient(180deg,#111c2c,#070b11);margin-bottom:18px}
+.endTitle{font-size:46px;margin:7px 0}.endText{color:#b0bdce;line-height:1.7;font-size:13px}
+.endPerson{position:absolute;bottom:-155px;left:50%;transform:translateX(-50%) scale(.55);transform-origin:bottom}
+.friend{position:absolute;bottom:-155px;left:64%;transform:scale(.55);transform-origin:bottom;width:230px;height:420px}.friend .bigHead{background:#d29a79}.friend .bigHair{background:#6a3a25}.friend .bigBody{background:#315a52}.friend .bigArm{background:#315a52}
+.endArt .heart{position:absolute;left:57%;top:38px;font-size:44px}
+@media(max-width:850px){.startCard{grid-template-columns:1fr}.hero{display:none}.hudLeft{left:10px;top:74px;width:175px}.sceneInfo{right:10px;top:74px;width:190px}.sceneInfo p{display:none}.phone{right:10px;bottom:180px;transform:scale(.78) rotate(2deg);transform-origin:bottom right}.dialogue{left:2%;right:2%;bottom:10px;grid-template-columns:58px 1fr}.avatar{height:65px}.aHead{transform:scale(.72);transform-origin:top left;left:15px}.aHair{transform:scale(.72);transform-origin:top left;left:12px}.aBody{transform:scale(.72);transform-origin:bottom left;left:7px}.dialogText{font-size:12px}.controls{bottom:190px;left:10px}.interact{bottom:190px}.topbar{padding:0 10px}.pill{display:none}}
+</style>
+</head>
+<body>
+<div id="game">
+<canvas id="world"></canvas>
+
+<header class="topbar">
+ <div class="brand"><div class="mark">D</div><div>Detrás de la pantalla</div></div>
+ <div class="topRight"><div class="pill">Prototipo narrativo · 2.5D</div><button id="pauseButton" class="pauseBtn" type="button">Ⅱ</button></div>
+</header>
+
+<div class="hudLeft">
+ <div class="hudTitle">Estado de Masteo</div>
+ <div class="barRow"><span>Control</span><b id="control">80%</b></div><div class="bar"><i id="controlBar" class="c" style="width:80%"></i></div>
+ <div class="barRow"><span>Confianza</span><b id="trust">50%</b></div><div class="bar"><i id="trustBar" class="t" style="width:50%"></i></div>
+ <div class="barRow"><span>Responsabilidad</span><b id="resp">10%</b></div><div class="bar"><i id="respBar" class="r" style="width:10%"></i></div>
+</div>
+
+<div class="sceneInfo"><div class="small" id="location">Casa · Dormitorio</div><strong id="sceneTitle">La cuenta anónima</strong><p id="objective">Explora la habitación y revisa el teléfono.</p></div>
+
+<div id="controls" class="controls">
+ <div class="key" data-key="w">W</div><div class="key" data-key="a">A</div><div class="key" data-key="s">S</div><div class="key" data-key="d">D</div>
+</div>
+<div id="interact" class="interact">E · Interactuar</div>
+
+<div id="phone" class="phone">
+ <div class="phoneScreen"><div class="pTop"><div class="pIcon">M</div><b>Red Escolar</b></div><div class="post" id="phoneText">Cuenta anónima activa.</div><div class="react">♡ 18 &nbsp; 💬 6 &nbsp; ↗ 2</div></div>
+</div>
+
+<div class="dialogue">
+ <div class="avatar"><div class="aHair"></div><div class="aHead"></div><div class="aBody"></div></div>
+ <div class="dialog"><div class="speaker">MASTEO</div><div id="dialogText" class="dialogText"></div><div id="choices" class="choices"></div></div>
+</div>
+
+<div id="start" class="start">
+ <div class="startCard">
+  <div>
+   <div class="tag">ETAPA 3 · PROTOTIPO JUGABLE</div>
+   <h1>Detrás de<br>la pantalla</h1>
+   <p>Explora la casa y el colegio como Masteo. Usa WASD para desplazarte, acércate a los puntos interactivos y toma decisiones que cambian el rumbo de la historia.</p>
+   <button id="startButton" class="btn" type="button">▶ Iniciar partida</button>
+   <button id="helpButton" class="btn secondary" type="button">¿Cómo jugar?</button>
+   <p id="help" style="display:none;font-size:11px">WASD mueve a Masteo. E interactúa cuando aparece el aviso. ESC o Ⅱ pausa. Las decisiones se realizan desde el panel inferior.</p>
+  </div>
+  <div class="hero"><div class="heroFloor"></div>
+   <div class="bigPerson"><div class="bigHair"></div><div class="bigHead"></div><div class="bigNeck"></div><div class="bigBody"></div><div class="bigArm ba1"></div><div class="bigArm ba2"></div><div class="bigPhone"></div></div>
+  </div>
+ </div>
+</div>
+
+<div id="pause" class="pause hidden">
+ <div class="card">
+  <div class="tag">MENÚ DEL JUEGO</div><h2>Juego pausado</h2>
+  <p>La simulación está detenida. El personaje y las interacciones se reanudarán exactamente donde quedaron.</p>
+  <button id="resumeButton" class="btn" type="button">▶ Continuar</button>
+  <button id="restartPause" class="btn secondary" type="button">↻ Reiniciar</button>
+ </div>
+</div>
+
+<div id="ending" class="ending hidden">
+ <div class="endCard">
+  <div id="endArt" class="endArt"></div>
+  <div class="tag" id="endTag"></div><div id="endTitle" class="endTitle"></div>
+  <p id="endText" class="endText"></p><p id="endText2" class="endText"></p>
+  <button id="restartEnd" class="btn" type="button">↻ Jugar de nuevo</button>
+ </div>
+</div>
+
+<script>
+"use strict";
+const canvas=document.getElementById("world"),ctx=canvas.getContext("2d");
+let W=innerWidth,H=innerHeight,dpr=1;
+let gameStarted=false,isPaused=false,sceneIndex=0,dialogOpen=true;
+let keys=new Set(),lastTime=performance.now(),moveTime=0;
+let player={x:.50,y:.63,speed:.34,dir:1,bob:0};
+let stats={control:80,trust:50,responsibility:10};
+let scene;
+const scenes=[
+ {key:"home",loc:"Casa · Dormitorio",title:"La cuenta anónima",obj:"Muévete por la habitación y revisa el teléfono.",phone:"Cuenta anónima activa.\\n\\n“Nadie sabe que soy yo.”",text:"Es de noche. Masteo está en su habitación. La computadora está encendida y el teléfono muestra una nueva conversación.",choices:[["Explorar el teléfono","Revisar la cuenta anónima.",()=>next(1,{control:4})]]},
+ {key:"home",loc:"Casa · Dormitorio",title:"Una oportunidad para molestar",obj:"Decide qué hacer con la conversación.",phone:"Grupo 2°B · Nueva conversación",text:"Algunos compañeros hablan de una persona del curso. Masteo reconoce una oportunidad para sentirse poderoso detrás del anonimato.",choices:[["Publicar una burla","Buscar las reacciones.",()=>next(2,{control:8,responsibility:-5})],["Solo observar","No publicar, pero tampoco intervenir.",()=>next(2,{responsibility:3})]]},
+ {key:"home",loc:"Casa · Dormitorio",title:"La burla",obj:"Continúa cuando estés listo.",phone:"“Jajaja, qué fácil hacerlos reaccionar.”",text:"Masteo publica el comentario. En segundos aparecen reacciones. Para él solamente fue otra broma.",choices:[["Cerrar el teléfono","Continuar con la noche.",()=>next(3,{control:7,responsibility:-5,trust:-4})]]},
+ {key:"school",loc:"Colegio · Pasillo",title:"Algo está cambiando",obj:"Explora el pasillo con WASD.",phone:"“¿Alguien sabe por qué ella no vino?”",text:"Al día siguiente, Masteo llega al colegio. Su mejor amiga no está. El pasillo se siente distinto.",choices:[["Preguntar qué ocurre","Intentar averiguar por qué falta.",()=>next(4,{responsibility:8})],["Ignorarlo","Seguir con el día.",()=>next(4,{control:5,responsibility:-4})]]},
+ {key:"school",loc:"Colegio · Aula",title:"La publicación",obj:"Mira el teléfono y continúa.",phone:"Fotografía publicada · 16 reacciones",text:"Durante el recreo, Masteo revisa su teléfono. Entre las publicaciones aparece una fotografía que reconoce.",choices:[["Abrir la publicación","Algo no encaja.",()=>next(5,{responsibility:10})]]},
+ {key:"school",loc:"Colegio · Aula",title:"La verdad",obj:"Enfréntate a lo que descubriste.",phone:"“Es ella...”",text:"Masteo reconoce a su mejor amiga. Comprende que la cuenta anónima que ha estado acosándola es la suya.",choices:[["Aceptar lo que hizo","El anonimato deja de parecer una protección.",()=>next(6,{responsibility:18,control:-12,trust:-5})]]},
+ {key:"school",loc:"Colegio · Patio",title:"Punto de decisión",obj:"Elige el camino de Masteo.",phone:"Dos caminos. Una decisión.",text:"Masteo mira su teléfono. Puede seguir buscando control o enfrentarse a lo que hizo.",choices:[["Continuar con las burlas","Mantener el anonimato.",()=>next(7,{control:18,responsibility:-12,trust:-15})],["Intentar cambiar","Asumir sus acciones.",()=>next(9,{control:-20,responsibility:22,trust:12})]]},
+ {key:"school",loc:"Colegio · Pasillo",title:"El daño aumenta",obj:"Observa las consecuencias.",phone:"“Mejor no me meto...”",text:"Masteo decide continuar. Las personas que lo rodean comienzan a desconfiar de él.",choices:[["Seguir adelante","Las relaciones empiezan a romperse.",()=>next(8,{control:8,responsibility:-8,trust:-20})]]},
+ {key:"school",loc:"Colegio · Patio",title:"Las personas se alejan",obj:"Observa el resultado.",phone:"0 mensajes nuevos.",text:"Su mejor amiga ya no confía en él. Otros compañeros también se distancian. La cuenta sigue allí, pero sus conversaciones reales desaparecieron.",choices:[["Ver el resultado","Masteo queda aislado.",()=>finish(false)]]},
+ {key:"school",loc:"Colegio · Aula",title:"Una oportunidad para reparar",obj:"Asume la responsabilidad.",phone:"“No puedo cambiar lo que hice.”",text:"Masteo cierra la cuenta. Una disculpa no borra lo ocurrido, pero decide reconocer su responsabilidad.",choices:[["Hablar con honestidad","Dar el primer paso.",()=>next(10,{responsibility:18,trust:10})]]},
+ {key:"school",loc:"Colegio · Patio",title:"Reparar con acciones",obj:"Demuestra que el cambio es real.",phone:"Cuenta anónima · Cerrada",text:"Masteo deja de utilizar las redes para molestar y actúa de otra manera cuando presencia una burla.",choices:[["Continuar","El cambio empieza a ser visible.",()=>next(11,{responsibility:12,trust:14})]]},
+ {key:"school",loc:"Colegio · Patio",title:"Una nueva amistad",obj:"Acepta o rechaza la invitación.",phone:"“¿Quieres venir con nosotros?”",text:"Un compañero se acerca. “¿Quieres sentarte con nosotros?” Por primera vez Masteo no necesita una pantalla para sentirse importante.",choices:[["Aceptar la invitación","Construir una relación basada en confianza.",()=>finish(true)]]}
+];
+
+function resize(){dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;canvas.width=W*dpr;canvas.height=H*dpr;canvas.style.width=W+"px";canvas.style.height=H+"px";ctx.setTransform(dpr,0,0,dpr,0,0)}
+addEventListener("resize",resize);
+resize();
+
+function startGame(){
+ document.getElementById("start").classList.add("hidden");
+ gameStarted=true;isPaused=false;sceneIndex=0;player={x:.50,y:.63,speed:.34,dir:1,bob:0};stats={control:80,trust:50,responsibility:10};
+ renderScene();lastTime=performance.now();requestAnimationFrame(loop);
+}
+function restart(){location.reload()}
+function setPause(v){
+ if(!gameStarted)return;
+ isPaused=Boolean(v);
+ document.getElementById("pause").classList.toggle("hidden",!isPaused);
+}
+function togglePause(){setPause(!isPaused)}
+document.getElementById("startButton").addEventListener("click",startGame);
+document.getElementById("pauseButton").addEventListener("click",togglePause);
+document.getElementById("resumeButton").addEventListener("click",()=>setPause(false));
+document.getElementById("restartPause").addEventListener("click",restart);
+document.getElementById("restartEnd").addEventListener("click",restart);
+document.getElementById("helpButton").addEventListener("click",()=>{const h=document.getElementById("help");h.style.display=h.style.display==="none"?"block":"none"});
+document.addEventListener("keydown",e=>{
+ if(["w","a","s","d","W","A","S","D","Escape","e","E"].includes(e.key))e.preventDefault();
+ if(e.key==="Escape"&&gameStarted){togglePause();return}
+ if(!gameStarted||isPaused)return;
+ const k=e.key.toLowerCase();if(["w","a","s","d"].includes(k)){keys.add(k);document.querySelector(`[data-key="${k}"]`).classList.add("active")}
+ if(k==="e")interact();
+});
+document.addEventListener("keyup",e=>{const k=e.key.toLowerCase();if(keys.has(k))keys.delete(k);const el=document.querySelector(`[data-key="${k}"]`);if(el)el.classList.remove("active")});
+function interact(){if(!gameStarted||isPaused)return;dialogOpen=true;document.getElementById("phone").classList.add("show")}
+function next(i,delta){
+ if(!gameStarted)return;
+ for(const k in delta)stats[k]=Math.max(0,Math.min(100,stats[k]+delta[k]));
+ sceneIndex=i;player.x=.50;player.y=.63;renderScene();
+}
+function renderScene(){
+ scene=scenes[sceneIndex];
+ document.getElementById("location").textContent=scene.loc;
+ document.getElementById("sceneTitle").textContent=scene.title;
+ document.getElementById("objective").textContent=scene.obj;
+ document.getElementById("dialogText").textContent=scene.text;
+ document.getElementById("phoneText").textContent=scene.phone.replaceAll("\\n","\n");
+ const choices=document.getElementById("choices");choices.innerHTML="";
+ scene.choices.forEach((c,i)=>{
+  const b=document.createElement("button");b.className="choice";b.type="button";
+  b.innerHTML="<b>"+c[0]+"</b><small>"+c[1]+"</small>";
+  b.addEventListener("click",c[2]);choices.appendChild(b);
+ });
+ updateStats();
+}
+function updateStats(){
+ const vals=[["control","controlBar"],["trust","trustBar"],["responsibility","respBar"]];
+ vals.forEach(([a,b])=>{document.getElementById(a==="responsibility"?"resp":a).textContent=stats[a]+"%";document.getElementById(b).style.width=stats[a]+"%"});
+}
+function loop(now){
+ const dt=Math.min((now-lastTime)/1000,.05);lastTime=now;
+ if(gameStarted&&!isPaused)update(dt);
+ draw();
+ requestAnimationFrame(loop);
+}
+function update(dt){
+ let dx=0,dy=0;
+ if(keys.has("w"))dy-=1;if(keys.has("s"))dy+=1;if(keys.has("a"))dx-=1;if(keys.has("d"))dx+=1;
+ if(dx||dy){
+  const len=Math.hypot(dx,dy);dx/=len;dy/=len;
+  player.x+=dx*player.speed*dt;player.y+=dy*player.speed*dt;
+  player.x=Math.max(.18,Math.min(.82,player.x));player.y=Math.max(.35,Math.min(.79,player.y));
+  player.dir=dx<0?-1:dx>0?1:player.dir;player.bob+=dt*10;
+ }else player.bob*=.92;
+ // When moving, keep the story interface but give the player a tangible exploration loop.
+ const interact=document.getElementById("interact");
+ const near=(sceneIndex<3 && Math.hypot(player.x-.67,player.y-.58)<.13) || (sceneIndex>=3 && Math.hypot(player.x-.50,player.y-.48)<.13);
+ interact.classList.toggle("show",near);
+}
+function draw(){
+ ctx.clearRect(0,0,W,H);
+ const isHome=scene.key==="home";
+ if(isHome)drawHomeWorld();else drawSchoolWorld();
+ drawPlayer();
+ drawLighting(isHome);
+}
+function grad(y0,y1,a,b){const g=ctx.createLinearGradient(0,y0,0,y1);g.addColorStop(0,a);g.addColorStop(1,b);return g}
+function poly(p,fill){ctx.fillStyle=fill;ctx.beginPath();p.forEach((q,i)=>i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1]));ctx.closePath();ctx.fill()}
+function rect(x,y,w,h,f){ctx.fillStyle=f;ctx.fillRect(x,y,w,h)}
+function ln(x1,y1,x2,y2,f,w=1){ctx.strokeStyle=f;ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke()}
+function txt(s,x,y,z,f="#fff",align="left"){ctx.fillStyle=f;ctx.font=`${z}px Segoe UI,Arial`;ctx.textAlign=align;ctx.fillText(s,x,y)}
+function drawHomeWorld(){
+ rect(0,0,W,H,grad(0,H,"#111b2b","#080c14"));
+ // ceiling and wall depth
+ poly([[0,H*.08],[W,H*.08],[W,H*.60],[0,H*.60]],"#17243a");
+ ln(0,H*.60,W,H*.60,"#3b4b60",2);
+ // window
+ const wx=W*.09,wy=H*.16,ww=W*.25,wh=H*.25;
+ rect(wx-7,wy-7,ww+14,wh+14,"#27384f");rect(wx,wy,ww,wh,"#081321");
+ rect(wx+ww*.49,wy,4,wh,"#35465c");rect(wx,wy+wh*.49,ww,4,"#35465c");
+ ctx.fillStyle="#d9e3f5";ctx.beginPath();ctx.arc(wx+ww*.73,wy+wh*.30,18,0,Math.PI*2);ctx.fill();
+ // subtle city lights
+ for(let i=0;i<15;i++){rect(wx+10+(i*37)%ww,wy+wh*.72-(i%3)*10,5,5,"#b8c6d055")}
+ // desk with perspective
+ poly([[W*.12,H*.58],[W*.64,H*.58],[W*.76,H*.69],[W*.20,H*.69]],"#6a4a35");
+ poly([[W*.18,H*.69],[W*.23,H*.69],[W*.20,H*.91],[W*.17,H*.91]],"#3d2b21");
+ poly([[W*.66,H*.69],[W*.71,H*.69],[W*.74,H*.91],[W*.70,H*.91]],"#3d2b21");
+ // monitor
+ rect(W*.39,H*.38,W*.23,H*.18,"#080b10");rect(W*.405,H*.395,W*.20,H*.15,"#223956");
+ // monitor glow
+ const glow=ctx.createRadialGradient(W*.505,H*.47,4,W*.505,H*.47,W*.24);glow.addColorStop(0,"#536fa055");glow.addColorStop(1,"transparent");ctx.fillStyle=glow;ctx.fillRect(W*.25,H*.22,W*.5,H*.45);
+ rect(W*.49,H*.56,W*.03,H*.05,"#37485d");rect(W*.45,H*.61,W*.11,H*.02,"#3e5067");
+ // keyboard
+ poly([[W*.39,H*.61],[W*.60,H*.61],[W*.57,H*.65],[W*.42,H*.65]],"#252f3c");
+ for(let i=0;i<7;i++)ln(W*(.42+i*.022),H*.625,W*(.43+i*.022),H*.625,"#66758a",1);
+ // bed
+ rect(W*.73,H*.45,W*.19,H*.18,"#27374d");rect(W*.71,H*.41,W*.22,H*.07,"#43556d");rect(W*.74,H*.39,W*.08,H*.06,"#7a8496");
+ // floor perspective
+ poly([[0,H*.60],[W,H*.60],[W,H],[0,H]],"#1b2532");
+ for(let i=0;i<8;i++){const yy=H*.62+i*i*6;ln(0,yy,W,yy,"#2a3746",1)}
+ // lamp
+ ln(W*.79,H*.29,W*.79,H*.42,"#73849a",5);ctx.fillStyle="#e5c966";ctx.beginPath();ctx.arc(W*.79,H*.27,23,0,Math.PI*2);ctx.fill();
+ txt("CASA · DORMITORIO",W*.04,H*.93,11,"#8393a8");
+}
+function drawSchoolWorld(){
+ rect(0,0,W,H,grad(0,H,"#9aaebb","#303944"));
+ // ceiling
+ rect(0,0,W,H*.13,"#d2d8da");
+ for(let x=0;x<W;x+=170){rect(x+25,H*.04,95,13,"#f5f6f4");}
+ // back wall
+ rect(0,H*.13,W,H*.49,"#aeb9bc");
+ // windows
+ for(let i=0;i<3;i++){const x=W*(.12+i*.29);rect(x,H*.19,W*.16,H*.23,"#415e72");rect(x+7,H*.19,W*.145,H*.215,"#7897a9");ln(x+W*.08,H*.19,x+W*.08,H*.405,"#c0c9cc",3)}
+ // lockers
+ for(let i=0;i<7;i++){const x=W*.03+i*W*.075;rect(x,H*.43,W*.058,H*.16,i%2?"#536779":"#607486");ln(x+W*.029,H*.44,x+W*.029,H*.585,"#8191a1",1)}
+ // floor
+ poly([[0,H*.62],[W,H*.62],[W,H],[0,H]],"#3a454e");
+ for(let i=0;i<10;i++){const y=H*.63+i*i*6;ln(0,y,W,y,"#4c5964",1)}
+ for(let i=0;i<7;i++){ln(W*.5,H*.62,(i/6)*W,H,"#59656f",1)}
+ // benches
+ for(let i=0;i<2;i++){const x=W*(.13+i*.43);rect(x,H*.67,W*.25,H*.045,"#6e5039");rect(x+W*.02,H*.715,W*.03,H*.10,"#4d3828");rect(x+W*.20,H*.715,W*.03,H*.10,"#4d3828")}
+ // poster
+ rect(W*.40,H*.19,W*.18,H*.11,"#263b52");txt("RESPETO",W*.49,H*.24,14,"#e5edf5","center");txt("Y CONVIVENCIA",W*.49,H*.265,8,"#a9bacb","center");
+ txt("COLEGIO · PASILLO / PATIO",W*.04,H*.93,11,"#d8e1e8");
+}
+function drawPlayer(){
+ const x=player.x*W,y=player.y*H,scale=Math.min(W/1200,H/700),bob=Math.sin(player.bob)*2*scale;
+ // shadow
+ ctx.fillStyle="#0008";ctx.beginPath();ctx.ellipse(x,y+64*scale,47*scale,12*scale,0,0,Math.PI*2);ctx.fill();
+ ctx.save();ctx.translate(x,y+bob);ctx.scale(player.dir,1);
+ // legs
+ rect(-29*scale,30*scale,20*scale,64*scale,"#1a2533");rect(9*scale,30*scale,20*scale,64*scale,"#1a2533");
+ // shoes
+ rect(-34*scale,88*scale,27*scale,10*scale,"#080b10");rect(7*scale,88*scale,29*scale,10*scale,"#080b10");
+ // body with highlight
+ ctx.fillStyle="#304760";ctx.beginPath();ctx.roundRect(-55*scale,-22*scale,110*scale,88*scale,28*scale);ctx.fill();
+ ctx.fillStyle="#405b77";ctx.beginPath();ctx.roundRect(-46*scale,-15*scale,20*scale,66*scale,12*scale);ctx.fill();
+ // arms
+ ctx.fillStyle="#314863";ctx.beginPath();ctx.roundRect(-64*scale,-5*scale,20*scale,72*scale,13*scale);ctx.fill();ctx.beginPath();ctx.roundRect(44*scale,-5*scale,20*scale,72*scale,13*scale);ctx.fill();
+ // neck
+ rect(-12*scale,-53*scale,24*scale,22*scale,"#b9785f");
+ // face
+ ctx.fillStyle="#c88768";ctx.beginPath();ctx.ellipse(0,-76*scale,36*scale,44*scale,0,0,Math.PI*2);ctx.fill();
+ // ear
+ ctx.fillStyle="#b9785f";ctx.beginPath();ctx.ellipse(-36*scale,-75*scale,9*scale,13*scale,0,0,Math.PI*2);ctx.ellipse(36*scale,-75*scale,9*scale,13*scale,0,0,Math.PI*2);ctx.fill();
+ // hair
+ ctx.fillStyle="#15131a";ctx.beginPath();ctx.ellipse(0,-102*scale,45*scale,38*scale,0,0,Math.PI*2);ctx.fill();poly([[-40*scale,-104*scale],[-24*scale,-132*scale],[0,-115*scale],[20*scale,-134*scale],[42*scale,-104*scale]],"#15131a");
+ // eyes and mouth
+ ctx.fillStyle="#171722";ctx.beginPath();ctx.ellipse(-14*scale,-76*scale,3.5*scale,2.5*scale,0,0,Math.PI*2);ctx.ellipse(14*scale,-76*scale,3.5*scale,2.5*scale,0,0,Math.PI*2);ctx.fill();
+ // phone
+ ctx.fillStyle="#080b11";ctx.strokeStyle="#718198";ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(-18*scale,8*scale,36*scale,60*scale,7*scale);ctx.fill();ctx.stroke();rect(-13*scale,17*scale,26*scale,35*scale,"#20334b");
+ ctx.restore();
+}
+function drawLighting(home){
+ const x=player.x*W,y=player.y*H;
+ const g=ctx.createRadialGradient(x,y,25,x,y,Math.max(W,H)*.65);g.addColorStop(0,"transparent");g.addColorStop(.62,"#00000005");g.addColorStop(1,"#0000009e");ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ // subtle color bloom around monitor / windows
+ if(home){const b=ctx.createRadialGradient(W*.5,H*.45,5,W*.5,H*.45,W*.32);b.addColorStop(0,"#536fa01c");b.addColorStop(1,"transparent");ctx.fillStyle=b;ctx.fillRect(0,0,W,H)}
+}
+function finish(good){
+ document.getElementById("ending").classList.remove("hidden");
+ document.getElementById("endTag").textContent=good?"FINAL POSITIVO":"FINAL NEGATIVO";
+ document.getElementById("endTitle").textContent=good?"Una nueva amistad 🤝":"Detrás de la pantalla, solo";
+ document.getElementById("endText").textContent=good?"Masteo dejó de usar el anonimato como una forma de sentirse superior. Reconoció sus acciones y comenzó a reparar el daño.":"Masteo continuó utilizando el anonimato para sentirse superior. Las personas dejaron de confiar en él y sus amistades se fueron alejando.";
+ document.getElementById("endText2").textContent=good?"Un compañero decidió darle una oportunidad. Masteo gana un nuevo amigo y descubre que la confianza se construye con acciones.":"Frente a la pantalla todavía tiene su teléfono, pero ya no tiene a sus amigos. Sus propias decisiones terminaron aislándolo.";
+ const art=document.getElementById("endArt");art.innerHTML="";
+ const p=document.createElement("div");p.className="bigPerson endPerson";p.innerHTML='<div class="bigHair"></div><div class="bigHead"></div><div class="bigNeck"></div><div class="bigBody"></div><div class="bigArm ba1"></div><div class="bigArm ba2"></div><div class="bigPhone"></div>';art.appendChild(p);
+ if(good){const f=document.createElement("div");f.className="friend";f.innerHTML='<div class="bigHair"></div><div class="bigHead"></div><div class="bigNeck"></div><div class="bigBody"></div><div class="bigArm ba1"></div><div class="bigArm ba2"></div>';art.appendChild(f);art.insertAdjacentHTML("beforeend",'<div class="heart">♥</div>')}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1916 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoFest - Clasifica y Recicla</title>
+
+<style>
+:root{
+  --sky-top:#eafff0;
+  --sky-bottom:#bdeccb;
+  --forest:#14342b;
+  --forest-light:#1e4d3e;
+  --cream:#f6fbf4;
+
+  --plastico:#ffd23f;
+  --plastico-dark:#c99400;
+
+  --papel:#4d96ff;
+  --papel-dark:#2f6fd1;
+
+  --vidrio:#3ecf6a;
+  --vidrio-dark:#209148;
+
+  --organico:#a9713f;
+  --organico-dark:#79501f;
+
+  --danger:#e0524d;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html,body{
+  margin:0;
+  padding:0;
+  min-height:100%;
+  background:radial-gradient(circle at 50% 0%,#d6f5df,#a9d9b8 70%);
+  font-family:'Trebuchet MS','Segoe UI',sans-serif;
+  color:var(--forest);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  overflow-x:hidden;
+}
+
+h1{
+  margin:14px 0 4px;
+  font-size:1.7rem;
+  letter-spacing:1px;
+  color:var(--forest);
+  text-shadow:1px 1px 0 #fff;
+}
+
+h1 span{
+  color:var(--vidrio-dark);
+}
+
+.subtitle{
+  margin:0 0 10px;
+  font-size:.85rem;
+  color:#3a5c4a;
+  text-align:center;
+  max-width:560px;
+  padding:0 12px;
+}
+
+.game-wrap{
+  position:relative;
+  width:min(94vw,520px);
+  aspect-ratio:600/800;
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:
+    0 14px 34px rgba(20,52,43,.35),
+    0 0 0 6px #ffffffaa;
+  border:3px solid var(--forest);
+}
+
+canvas{
+  display:block;
+  width:100%;
+  height:100%;
+  background:linear-gradient(var(--sky-top),var(--sky-bottom) 70%);
+}
+
+.overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(20,52,43,.94);
+  color:var(--cream);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:20px;
+  gap:10px;
+  z-index:20;
+}
+
+.hidden{
+  display:none !important;
+}
+
+.overlay h2{
+  margin:0 0 4px;
+  font-size:1.5rem;
+  color:#ffe08a;
+}
+
+.legend{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin:10px 0;
+  width:100%;
+  max-width:380px;
+}
+
+.legend-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:rgba(255,255,255,.08);
+  border-radius:10px;
+  padding:7px 8px;
+  font-size:.8rem;
+  text-align:left;
+}
+
+.swatch{
+  width:22px;
+  height:22px;
+  border-radius:6px;
+  flex-shrink:0;
+  box-shadow:inset 0 0 0 2px rgba(0,0,0,.25);
+}
+
+.keys{
+  font-size:.78rem;
+  line-height:1.5;
+  opacity:.9;
+  max-width:380px;
+}
+
+.keys b{
+  color:#ffe08a;
+}
+
+.btn{
+  background:linear-gradient(180deg,#ffe08a,#f5b942);
+  color:#3a2600;
+  border:none;
+  border-radius:30px;
+  padding:11px 26px;
+  font-size:1rem;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow:0 4px 0 #b87f16;
+}
+
+.btn:active{
+  transform:translateY(3px);
+  box-shadow:0 1px 0 #b87f16;
+}
+
+.btn-secondary{
+  background:linear-gradient(180deg,#cfe9d6,#a7cdb2);
+  color:var(--forest);
+  box-shadow:0 4px 0 #6f9a7c;
+}
+
+.btn-row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+.hud{
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  padding:8px 10px;
+  pointer-events:none;
+  font-size:.85rem;
+  text-shadow:1px 1px 2px rgba(0,0,0,.5);
+  color:#fff;
+  z-index:5;
+}
+
+.hud .pill{
+  background:rgba(20,52,43,.7);
+  border-radius:20px;
+  padding:5px 10px;
+  margin-bottom:4px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+
+.lives{
+  display:flex;
+  gap:4px;
+  font-size:1rem;
+}
+
+.top-controls{
+  position:absolute;
+  top:8px;
+  right:8px;
+  display:flex;
+  gap:6px;
+  pointer-events:auto;
+}
+
+.icon-btn{
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  border:none;
+  background:rgba(20,52,43,.7);
+  color:#fff;
+  font-size:1rem;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* Indicador superior de qué debe buscar el jugador */
+.target-panel{
+  position:absolute;
+  top:52px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:6;
+  background:rgba(255,255,255,.94);
+  border:3px solid var(--forest);
+  border-radius:14px;
+  padding:5px 12px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:var(--forest);
+  font-size:.75rem;
+  font-weight:bold;
+  box-shadow:0 4px 10px rgba(0,0,0,.18);
+}
+
+.target-dot{
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  border:2px solid rgba(0,0,0,.25);
+}
+
+.category-banner{
+  position:absolute;
+  bottom:4px;
+  left:0;
+  right:0;
+  display:flex;
+  justify-content:center;
+  padding:6px 0;
+  pointer-events:none;
+  z-index:5;
+}
+
+.category-chip{
+  background:rgba(20,52,43,.88);
+  color:#fff;
+  padding:5px 15px;
+  border-radius:20px;
+  font-size:.85rem;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  box-shadow:0 2px 6px rgba(0,0,0,.3);
+  border:2px solid transparent;
+}
+
+.category-chip .dot{
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.7);
+}
+
+.touch-controls{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  width:min(94vw,520px);
+  margin-top:10px;
+  gap:8px;
+}
+
+.touch-controls .side{
+  display:flex;
+  gap:8px;
+}
+
+.tbtn{
+  background:var(--forest);
+  color:#fff;
+  border:none;
+  border-radius:14px;
+  width:56px;
+  height:52px;
+  font-size:1.3rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 4px 0 #06140f;
+  user-select:none;
+  touch-action:manipulation;
+}
+
+.tbtn:active{
+  transform:translateY(3px);
+  box-shadow:0 1px 0 #06140f;
+}
+
+.tbtn.cycle{
+  background:var(--vidrio-dark);
+  box-shadow:0 4px 0 #12492a;
+  font-size:.95rem;
+  width:96px;
+}
+
+footer{
+  margin:12px 0 20px;
+  font-size:.72rem;
+  color:#3a5c4a;
+  opacity:.8;
+  text-align:center;
+}
+
+@media(max-width:420px){
+  h1{
+    font-size:1.35rem;
+  }
+
+  .subtitle{
+    font-size:.78rem;
+  }
+
+  .target-panel{
+    font-size:.68rem;
+  }
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>Eco<span>Fest</span> 🌿 Clasifica y Recicla</h1>
+
+<p class="subtitle">
+  Mueve el contenedor, elige la categoría correcta y atrapa cada residuo.
+  ¡Clasifica bien para conseguir puntos y mantener tu combo!
+</p>
+
+<div class="game-wrap">
+
+<canvas id="gameCanvas" width="600" height="800"></canvas>
+
+  <div class="hud" id="hud">
+    <div>
+      <div class="pill">⭐ <span id="scoreText">0</span></div>
+      <div class="pill lives" id="livesPill"></div>
+    </div>
+
+```
+<div class="top-controls">
+  <button class="icon-btn" id="pauseBtn" title="Pausa">⏸</button>
+  <button class="icon-btn" id="restartBtnTop" title="Reiniciar">⟳</button>
+</div>
+```
+
+  </div>
+
+  <div class="target-panel">
+    🎯 CONTENEDOR:
+    <span class="target-dot" id="targetDot"></span>
+    <span id="targetLabel">Plástico</span>
+  </div>
+
+  <div class="category-banner">
+    <div class="category-chip" id="categoryChip">
+      <span class="dot" id="categoryDot"></span>
+      <span id="categoryLabel">Plástico</span>
+    </div>
+  </div>
+
+  <!-- GUÍA -->
+
+  <div class="overlay" id="guideOverlay">
+    <h2>♻️ Cómo se juega</h2>
+
+```
+<div class="keys">
+  Mueve el contenedor con <b>← →</b> o A / D.<br>
+  Cambia la categoría con <b>↑ ↓</b> o las teclas <b>1-4</b>.<br><br>
+
+  <b>IMPORTANTE:</b> dejar caer un residuo ya no te quita vida.
+  Solo pierdes una vida si intentas clasificarlo en el contenedor equivocado.
+</div>
+
+<div class="legend">
+  <div class="legend-item">
+    <span class="swatch" style="background:var(--plastico)"></span>
+    <b>Plástico</b> — botellas y envases
+  </div>
+
+  <div class="legend-item">
+    <span class="swatch" style="background:var(--papel)"></span>
+    <b>Papel</b> — hojas y cartón
+  </div>
+
+  <div class="legend-item">
+    <span class="swatch" style="background:var(--vidrio)"></span>
+    <b>Vidrio</b> — frascos y botellas
+  </div>
+
+  <div class="legend-item">
+    <span class="swatch" style="background:var(--organico)"></span>
+    <b>Orgánico</b> — cáscaras y restos
+  </div>
+</div>
+
+<button class="btn" id="startBtn">
+  ¡Empezar a reciclar!
+</button>
+```
+
+  </div>
+
+  <!-- PAUSA -->
+
+  <div class="overlay hidden" id="pauseOverlay">
+    <h2>⏸ En pausa</h2>
+
+```
+<p style="max-width:320px;font-size:.9rem;">
+  Tómate un respiro. El planeta puede esperar unos segundos 🌍
+</p>
+
+<div class="btn-row">
+  <button class="btn" id="resumeBtn">Continuar</button>
+  <button class="btn btn-secondary" id="guideFromPauseBtn">
+    Ver guía
+  </button>
+</div>
+```
+
+  </div>
+
+  <!-- GAME OVER -->
+
+  <div class="overlay hidden" id="gameOverOverlay">
+    <h2>🌱 ¡Juego terminado!</h2>
+
+```
+<p style="font-size:1rem;margin:0;">
+  Puntos finales:
+  <b id="finalScore">0</b>
+</p>
+
+<p style="font-size:.85rem;opacity:.85;margin:0 0 6px;"
+   id="bestScoreText">
+</p>
+
+<div class="btn-row">
+  <button class="btn" id="retryBtn">
+    Jugar de nuevo
+  </button>
+</div>
+```
+
+  </div>
+
+</div>
+
+<div class="touch-controls">
+
+  <div class="side">
+    <button class="tbtn" id="leftBtn">◀</button>
+    <button class="tbtn" id="rightBtn">▶</button>
+  </div>
+
+  <button class="tbtn cycle" id="cycleBtn">
+    Cambiar ♻
+  </button>
+
+  <div class="side">
+    <button class="tbtn" id="pauseBtnBottom">⏸</button>
+  </div>
+
+</div>
+
+<footer>
+  Hecho para EcoFest — cada residuo bien clasificado suma puntos y ayuda al planeta 🌎
+</footer>
+
+<script>
+(function(){
+
+  const canvas = document.getElementById("gameCanvas");
+  const ctx = canvas.getContext("2d");
+
+  const W = canvas.width;
+  const H = canvas.height;
+
+  /* =========================
+     CATEGORÍAS
+  ========================= */
+
+  const CATEGORIES = [
+    {
+      id:"plastico",
+      name:"PLÁSTICO",
+      color:"#ffd23f",
+      dark:"#c99400",
+      icon:"bottle",
+      examples:"Botellas / envases"
+    },
+    {
+      id:"papel",
+      name:"PAPEL",
+      color:"#4d96ff",
+      dark:"#2f6fd1",
+      icon:"paper",
+      examples:"Hojas / cartón"
+    },
+    {
+      id:"vidrio",
+      name:"VIDRIO",
+      color:"#3ecf6a",
+      dark:"#209148",
+      icon:"jar",
+      examples:"Frascos / botellas"
+    },
+    {
+      id:"organico",
+      name:"ORGÁNICO",
+      color:"#a9713f",
+      dark:"#79501f",
+      icon:"peel",
+      examples:"Cáscaras / restos"
+    }
+  ];
+
+  const GROUND_Y = H - 60;
+
+  /* =========================
+     ESTADO
+  ========================= */
+
+  let state = "guide";
+
+  let score = 0;
+  let lives = 3;
+  let bestScore = 0;
+  let combo = 0;
+
+  let particles = [];
+  let floatingTexts = [];
+
+  let spawnTimer = 0;
+  let spawnInterval = 75;
+
+  const bin = {
+    x:W / 2 - 55,
+    y:GROUND_Y - 82,
+    width:110,
+    height:82,
+    speed:7,
+    catIndex:0
+  };
+
+  let items = [];
+
+  /* =========================
+     INPUT
+  ========================= */
+
+  const keys = {};
+
+  document.addEventListener("keydown", function(e){
+
+    if([
+      "ArrowLeft",
+      "ArrowRight",
+      "ArrowUp",
+      "ArrowDown",
+      " "
+    ].includes(e.key)){
+      e.preventDefault();
+    }
+
+    keys[e.key] = true;
+
+    if(e.key === " "){
+      togglePause();
+    }
+
+    if(e.key === "r" || e.key === "R"){
+      restartGame();
+    }
+
+    if(["1","2","3","4"].includes(e.key)){
+      bin.catIndex = parseInt(e.key,10) - 1;
+      updateCategoryUI();
+    }
+
+    if(e.key === "ArrowUp"){
+      cycleCategory(-1);
+      keys[e.key] = false;
+    }
+
+    if(e.key === "ArrowDown"){
+      cycleCategory(1);
+      keys[e.key] = false;
+    }
+  });
+
+  document.addEventListener("keyup", function(e){
+    keys[e.key] = false;
+  });
+
+  function cycleCategory(dir){
+
+    bin.catIndex =
+      (bin.catIndex + dir + CATEGORIES.length) %
+      CATEGORIES.length;
+
+    updateCategoryUI();
+  }
+
+  /* =========================
+     CONTROLES TÁCTILES
+  ========================= */
+
+  function pressHold(el, fn){
+
+    let interval = null;
+
+    const start = function(ev){
+      ev.preventDefault();
+
+      if(state !== "playing") return;
+
+      fn();
+
+      clearInterval(interval);
+      interval = setInterval(fn,16);
+    };
+
+    const stop = function(){
+      clearInterval(interval);
+      interval = null;
+    };
+
+    el.addEventListener("touchstart",start,{passive:false});
+    el.addEventListener("mousedown",start);
+
+    el.addEventListener("touchend",stop);
+    el.addEventListener("touchcancel",stop);
+    el.addEventListener("mouseup",stop);
+    el.addEventListener("mouseleave",stop);
+  }
+
+  pressHold(
+    document.getElementById("leftBtn"),
+    function(){
+      keys["ArrowLeft"] = true;
+    }
+  );
+
+  pressHold(
+    document.getElementById("rightBtn"),
+    function(){
+      keys["ArrowRight"] = true;
+    }
+  );
+
+  document.getElementById("leftBtn").addEventListener(
+    "touchend",
+    function(){ keys["ArrowLeft"] = false; }
+  );
+
+  document.getElementById("leftBtn").addEventListener(
+    "mouseup",
+    function(){ keys["ArrowLeft"] = false; }
+  );
+
+  document.getElementById("rightBtn").addEventListener(
+    "touchend",
+    function(){ keys["ArrowRight"] = false; }
+  );
+
+  document.getElementById("rightBtn").addEventListener(
+    "mouseup",
+    function(){ keys["ArrowRight"] = false; }
+  );
+
+  document.getElementById("cycleBtn").addEventListener(
+    "click",
+    function(){
+      if(state === "playing"){
+        cycleCategory(1);
+      }
+    }
+  );
+
+  /* =========================
+     UI
+  ========================= */
+
+  const guideOverlay =
+    document.getElementById("guideOverlay");
+
+  const pauseOverlay =
+    document.getElementById("pauseOverlay");
+
+  const gameOverOverlay =
+    document.getElementById("gameOverOverlay");
+
+  const scoreText =
+    document.getElementById("scoreText");
+
+  const livesPill =
+    document.getElementById("livesPill");
+
+  const categoryChip =
+    document.getElementById("categoryChip");
+
+  const categoryDot =
+    document.getElementById("categoryDot");
+
+  const categoryLabel =
+    document.getElementById("categoryLabel");
+
+  const targetDot =
+    document.getElementById("targetDot");
+
+  const targetLabel =
+    document.getElementById("targetLabel");
+
+  function updateCategoryUI(){
+
+    const c = CATEGORIES[bin.catIndex];
+
+    categoryDot.style.background = c.color;
+    categoryLabel.textContent =
+      c.name + " — " + c.examples;
+
+    categoryChip.style.borderColor = c.color;
+
+    targetDot.style.background = c.color;
+    targetLabel.textContent = c.name;
+  }
+
+  function updateLivesUI(){
+
+    livesPill.innerHTML = "";
+
+    for(let i=0;i<3;i++){
+
+      const span =
+        document.createElement("span");
+
+      span.textContent =
+        i < lives ? "❤️" : "🖤";
+
+      livesPill.appendChild(span);
+    }
+  }
+
+  function updateScoreUI(){
+    scoreText.textContent = score;
+  }
+
+  function showOverlay(el){
+    el.classList.remove("hidden");
+  }
+
+  function hideOverlay(el){
+    el.classList.add("hidden");
+  }
+
+  document.getElementById("startBtn")
+    .addEventListener("click",startGame);
+
+  document.getElementById("resumeBtn")
+    .addEventListener("click",togglePause);
+
+  document.getElementById("guideFromPauseBtn")
+    .addEventListener("click",function(){
+
+      hideOverlay(pauseOverlay);
+      showOverlay(guideOverlay);
+
+      state = "guide";
+    });
+
+  document.getElementById("retryBtn")
+    .addEventListener("click",restartGame);
+
+  document.getElementById("pauseBtn")
+    .addEventListener("click",togglePause);
+
+  document.getElementById("pauseBtnBottom")
+    .addEventListener("click",togglePause);
+
+  document.getElementById("restartBtnTop")
+    .addEventListener("click",restartGame);
+
+  /* =========================
+     JUEGO
+  ========================= */
+
+  function startGame(){
+
+    hideOverlay(guideOverlay);
+
+    resetState();
+
+    state = "playing";
+
+    requestAnimationFrame(loop);
+  }
+
+  function restartGame(){
+
+    resetState();
+
+    hideOverlay(pauseOverlay);
+    hideOverlay(gameOverOverlay);
+    hideOverlay(guideOverlay);
+
+    state = "playing";
+
+    requestAnimationFrame(loop);
+  }
+
+  function resetState(){
+
+    score = 0;
+    lives = 3;
+    combo = 0;
+
+    items = [];
+    particles = [];
+    floatingTexts = [];
+
+    spawnTimer = 0;
+    spawnInterval = 75;
+
+    bin.x = W / 2 - bin.width / 2;
+
+    bin.catIndex =
+      Math.floor(Math.random() * CATEGORIES.length);
+
+    updateScoreUI();
+    updateLivesUI();
+    updateCategoryUI();
+  }
+
+  function togglePause(){
+
+    if(state === "playing"){
+
+      state = "paused";
+
+      showOverlay(pauseOverlay);
+
+    }else if(state === "paused"){
+
+      state = "playing";
+
+      hideOverlay(pauseOverlay);
+
+      requestAnimationFrame(loop);
+    }
+  }
+
+  /* =========================
+     CREAR RESIDUOS
+  ========================= */
+
+  function spawnItem(){
+
+    const catIndex =
+      Math.floor(Math.random() * CATEGORIES.length);
+
+    const size = 58;
+
+    items.push({
+
+      x:Math.random() * (W - size),
+
+      y:-size,
+
+      size:size,
+
+      catIndex:catIndex,
+
+      vy:2.2 + Math.random() * .5,
+
+      wobble:Math.random() * Math.PI * 2,
+
+      rotation:(Math.random() - .5) * .2,
+
+      id:Date.now() + Math.random()
+    });
+  }
+
+  /* =========================
+     EFECTOS
+  ========================= */
+
+  function burst(x,y,color){
+
+    for(let i=0;i<16;i++){
+
+      const angle =
+        Math.random() * Math.PI * 2;
+
+      const speed =
+        1.5 + Math.random() * 3;
+
+      particles.push({
+
+        x:x,
+        y:y,
+
+        vx:Math.cos(angle) * speed,
+
+        vy:Math.sin(angle) * speed - 1,
+
+        life:30 + Math.random() * 15,
+
+        color:color
+      });
+    }
+  }
+
+  function addFloatingText(
+    text,
+    x,
+    y,
+    color
+  ){
+
+    floatingTexts.push({
+
+      text:text,
+      x:x,
+      y:y,
+
+      life:45,
+
+      color:color
+    });
+  }
+
+  /* =========================
+     DIBUJO
+  ========================= */
+
+  function drawBackground(){
+
+    /* cielo */
+
+    const sky =
+      ctx.createLinearGradient(
+        0,0,0,GROUND_Y
+      );
+
+    sky.addColorStop(0,"#eafff0");
+    sky.addColorStop(1,"#bdeccb");
+
+    ctx.fillStyle = sky;
+
+    ctx.fillRect(
+      0,
+      0,
+      W,
+      GROUND_Y
+    );
+
+    /* sol */
+
+    ctx.fillStyle = "rgba(255,221,91,.75)";
+
+    ctx.beginPath();
+
+    ctx.arc(
+      520,
+      90,
+      42,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
+
+    /* nubes */
+
+    ctx.fillStyle =
+      "rgba(255,255,255,.6)";
+
+    [
+      [80,90,40],
+      [160,70,28],
+      [430,110,36],
+      [520,60,22]
+    ].forEach(function(data){
+
+      const cx=data[0];
+      const cy=data[1];
+      const r=data[2];
+
+      ctx.beginPath();
+
+      ctx.arc(cx,cy,r,0,Math.PI*2);
+
+      ctx.arc(
+        cx + r*.8,
+        cy + 6,
+        r*.7,
+        0,
+        Math.PI*2
+      );
+
+      ctx.arc(
+        cx - r*.8,
+        cy + 8,
+        r*.6,
+        0,
+        Math.PI*2
+      );
+
+      ctx.fill();
+    });
+
+    /* suelo */
+
+    const grad =
+      ctx.createLinearGradient(
+        0,
+        GROUND_Y,
+        0,
+        H
+      );
+
+    grad.addColorStop(0,"#6fbf73");
+    grad.addColorStop(1,"#3f8f4c");
+
+    ctx.fillStyle = grad;
+
+    ctx.fillRect(
+      0,
+      GROUND_Y,
+      W,
+      H-GROUND_Y
+    );
+
+    ctx.fillStyle="#2f6b3a";
+
+    ctx.fillRect(
+      0,
+      GROUND_Y,
+      W,
+      7
+    );
+
+    /* pequeñas plantas */
+
+    ctx.strokeStyle="#276b35";
+    ctx.lineWidth=3;
+
+    for(let x=20;x<W;x+=45){
+
+      ctx.beginPath();
+
+      ctx.moveTo(x,GROUND_Y+2);
+      ctx.lineTo(x-3,GROUND_Y-7);
+
+      ctx.moveTo(x,GROUND_Y+2);
+      ctx.lineTo(x+4,GROUND_Y-6);
+
+      ctx.stroke();
+    }
+  }
+
+  function roundRect(x,y,w,h,r){
+
+    ctx.beginPath();
+
+    ctx.moveTo(x+r,y);
+
+    ctx.arcTo(
+      x+w,y,
+      x+w,y+h,
+      r
+    );
+
+    ctx.arcTo(
+      x+w,y+h,
+      x,y+h,
+      r
+    );
+
+    ctx.arcTo(
+      x,y+h,
+      x,y,
+      r
+    );
+
+    ctx.arcTo(
+      x,y,
+      x+w,y,
+      r
+    );
+
+    ctx.closePath();
+  }
+
+  /* =========================
+     CONTENEDOR
+  ========================= */
+
+  function drawBin(){
+
+    const c =
+      CATEGORIES[bin.catIndex];
+
+    ctx.save();
+
+    ctx.translate(
+      bin.x,
+      bin.y
+    );
+
+    /* sombra */
+
+    ctx.fillStyle =
+      "rgba(0,0,0,.18)";
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+      bin.width/2,
+      bin.height+9,
+      bin.width*.45,
+      9,
+      0,
+      0,
+      Math.PI*2
+    );
+
+    ctx.fill();
+
+    /* cuerpo */
+
+    ctx.fillStyle = c.color;
+    ctx.strokeStyle = c.dark;
+    ctx.lineWidth = 4;
+
+    ctx.beginPath();
+
+    ctx.moveTo(8,18);
+    ctx.lineTo(bin.width-8,18);
+    ctx.lineTo(bin.width-17,bin.height);
+    ctx.lineTo(17,bin.height);
+
+    ctx.closePath();
+
+    ctx.fill();
+    ctx.stroke();
+
+    /* tapa */
+
+    ctx.fillStyle = c.dark;
+
+    roundRect(
+      0,
+      0,
+      bin.width,
+      19,
+      6
+    );
+
+    ctx.fill();
+
+    /* abertura */
+
+    ctx.fillStyle="rgba(0,0,0,.25)";
+
+    roundRect(
+      12,
+      18,
+      bin.width-24,
+      12,
+      5
+    );
+
+    ctx.fill();
+
+    /* símbolo reciclaje */
+
+    ctx.fillStyle =
+      "rgba(255,255,255,.9)";
+
+    ctx.save();
+
+    ctx.translate(
+      bin.width/2,
+      49
+    );
+
+    ctx.scale(.55,.55);
+
+    for(let i=0;i<3;i++){
+
+      ctx.save();
+
+      ctx.rotate(
+        i * (Math.PI*2/3)
+      );
+
+      ctx.beginPath();
+
+      ctx.moveTo(0,-22);
+      ctx.lineTo(10,-4);
+      ctx.lineTo(-10,-4);
+
+      ctx.closePath();
+
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    ctx.restore();
+
+    /* nombre grande */
+
+    ctx.fillStyle="#14342b";
+
+    ctx.font =
+      "bold 13px Trebuchet MS";
+
+    ctx.textAlign="center";
+
+    ctx.fillText(
+      c.name,
+      bin.width/2,
+      73
+    );
+
+    ctx.font =
+      "bold 9px Trebuchet MS";
+
+    ctx.fillText(
+      c.examples,
+      bin.width/2,
+      87
+    );
+
+    /* resaltado cuando coincide */
+
+    const matchingItems =
+      items.some(
+        item =>
+          item.catIndex === bin.catIndex &&
+          item.y > 0 &&
+          item.y < bin.y
+      );
+
+    if(matchingItems){
+
+      ctx.strokeStyle =
+        "rgba(255,255,255,.9)";
+
+      ctx.lineWidth=3;
+
+      ctx.setLineDash([6,4]);
+
+      roundRect(
+        -4,
+        -4,
+        bin.width+8,
+        bin.height+8,
+        9
+      );
+
+      ctx.stroke();
+
+      ctx.setLineDash([]);
+    }
+
+    ctx.restore();
+  }
+
+  /* =========================
+     ICONOS DE RESIDUOS
+  ========================= */
+
+  function drawTrashIcon(item){
+
+    const c =
+      CATEGORIES[item.catIndex];
+
+    const s=item.size;
+
+    const centerX =
+      item.x+s/2;
+
+    const centerY =
+      item.y+s/2;
+
+    /* etiqueta */
+
+    ctx.save();
+
+    ctx.translate(
+      centerX,
+      centerY
+    );
+
+    ctx.rotate(
+      Math.sin(item.wobble)*.08
+    );
+
+    /* círculo de fondo */
+
+    ctx.fillStyle =
+      "rgba(255,255,255,.95)";
+
+    ctx.strokeStyle=c.dark;
+    ctx.lineWidth=3;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      0,
+      0,
+      s*.47,
+      0,
+      Math.PI*2
+    );
+
+    ctx.fill();
+    ctx.stroke();
+
+    /* icono */
+
+    ctx.fillStyle=c.color;
+    ctx.strokeStyle=c.dark;
+    ctx.lineWidth=2.5;
+
+    if(item.catIndex===0){
+
+      /* botella */
+
+      roundRect(
+        -9,
+        -12,
+        18,
+        28,
+        5
+      );
+
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle=c.dark;
+
+      roundRect(
+        -5,
+        -21,
+        10,
+        9,
+        2
+      );
+
+      ctx.fill();
+
+    }else if(item.catIndex===1){
+
+      /* hoja */
+
+      ctx.beginPath();
+
+      ctx.moveTo(-15,-17);
+      ctx.lineTo(7,-17);
+      ctx.lineTo(15,-9);
+      ctx.lineTo(15,17);
+      ctx.lineTo(-15,17);
+      ctx.closePath();
+
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.strokeStyle=c.dark;
+      ctx.lineWidth=1.5;
+
+      for(let y=-5;y<=10;y+=6){
+
+        ctx.beginPath();
+
+        ctx.moveTo(-9,y);
+        ctx.lineTo(9,y);
+
+        ctx.stroke();
+      }
+
+    }else if(item.catIndex===2){
+
+      /* frasco */
+
+      ctx.beginPath();
+
+      ctx.moveTo(-10,-5);
+
+      ctx.quadraticCurveTo(
+        -12,
+        18,
+        -8,
+        20
+      );
+
+      ctx.lineTo(8,20);
+
+      ctx.quadraticCurveTo(
+        12,
+        18,
+        10,-5
+      );
+
+      ctx.lineTo(6,-5);
+
+      ctx.lineTo(6,-16);
+
+      ctx.lineTo(-6,-16);
+
+      ctx.lineTo(-6,-5);
+
+      ctx.closePath();
+
+      ctx.globalAlpha=.9;
+
+      ctx.fill();
+      ctx.globalAlpha=1;
+
+      ctx.stroke();
+
+    }else{
+
+      /* cáscara */
+
+      ctx.beginPath();
+
+      ctx.arc(
+        0,
+        1,
+        15,
+        .25,
+        Math.PI*1.7
+      );
+
+      ctx.lineWidth=8;
+
+      ctx.strokeStyle=c.color;
+
+      ctx.stroke();
+
+      ctx.lineWidth=2;
+
+      ctx.strokeStyle=c.dark;
+
+      ctx.stroke();
+    }
+
+    ctx.restore();
+
+    /* nombre del residuo */
+
+    ctx.save();
+
+    ctx.font =
+      "bold 12px Trebuchet MS";
+
+    ctx.textAlign="center";
+
+    ctx.fillStyle="#14342b";
+
+    ctx.strokeStyle="rgba(255,255,255,.9)";
+    ctx.lineWidth=4;
+
+    const names=[
+      "BOTELLA",
+      "PAPEL",
+      "FRASCO",
+      "CÁSCARA"
+    ];
+
+    const labelY =
+      item.y + item.size + 15;
+
+    ctx.strokeText(
+      names[item.catIndex],
+      centerX,
+      labelY
+    );
+
+    ctx.fillText(
+      names[item.catIndex],
+      centerX,
+      labelY
+    );
+
+    /* categoría pequeña */
+
+    ctx.font =
+      "bold 9px Trebuchet MS";
+
+    ctx.fillStyle=c.dark;
+
+    ctx.fillText(
+      c.name,
+      centerX,
+      labelY+11
+    );
+
+    ctx.restore();
+  }
+
+  /* =========================
+     PARTICULAS
+  ========================= */
+
+  function drawParticles(){
+
+    particles.forEach(function(p){
+
+      ctx.globalAlpha =
+        Math.max(p.life/40,0);
+
+      ctx.fillStyle=p.color;
+
+      ctx.beginPath();
+
+      ctx.arc(
+        p.x,
+        p.y,
+        3,
+        0,
+        Math.PI*2
+      );
+
+      ctx.fill();
+    });
+
+    ctx.globalAlpha=1;
+  }
+
+  function drawFloatingTexts(){
+
+    floatingTexts.forEach(function(t){
+
+      ctx.globalAlpha =
+        Math.max(t.life/45,0);
+
+      ctx.fillStyle=t.color;
+
+      ctx.font =
+        "bold 18px Trebuchet MS";
+
+      ctx.textAlign="center";
+
+      ctx.strokeStyle="white";
+      ctx.lineWidth=4;
+
+      ctx.strokeText(
+        t.text,
+        t.x,
+        t.y
+      );
+
+      ctx.fillText(
+        t.text,
+        t.x,
+        t.y
+      );
+    });
+
+    ctx.globalAlpha=1;
+    ctx.textAlign="left";
+  }
+
+  /* =========================
+     LÓGICA DEL JUEGO
+  ========================= */
+
+  function update(){
+
+    /* movimiento */
+
+    if(
+      (keys["ArrowLeft"] ||
+       keys["a"] ||
+       keys["A"]) &&
+      bin.x > 0
+    ){
+      bin.x -= bin.speed;
+    }
+
+    if(
+      (keys["ArrowRight"] ||
+       keys["d"] ||
+       keys["D"]) &&
+      bin.x < W-bin.width
+    ){
+      bin.x += bin.speed;
+    }
+
+    /* dificultad progresiva */
+
+    spawnInterval =
+      Math.max(
+        36,
+        78 - Math.floor(score/5)*3
+      );
+
+    spawnTimer++;
+
+    if(spawnTimer>=spawnInterval){
+
+      spawnTimer=0;
+
+      spawnItem();
+    }
+
+    const speedMultiplier =
+      1 + Math.min(
+        score*.025,
+        1.8
+      );
+
+    for(
+      let i=items.length-1;
+      i>=0;
+      i--
+    ){
+
+      const it=items[i];
+
+      it.y +=
+        it.vy * speedMultiplier;
+
+      it.wobble += .06;
+
+      /* =================================
+         COLISIÓN MÁS JUSTA
+         
+         Solo consideramos que el residuo
+         entra al contenedor cuando su parte
+         inferior llega a la abertura.
+      ================================= */
+
+      const itemBottom =
+        it.y + it.size;
+
+      const openingTop =
+        bin.y + 14;
+
+      const horizontalOverlap =
+        it.x + it.size > bin.x + 15 &&
+        it.x < bin.x + bin.width - 15;
+
+      const enteringBin =
+        itemBottom >= openingTop &&
+        itemBottom <= bin.y + 35 &&
+        horizontalOverlap;
+
+      if(enteringBin){
+
+        const c =
+          CATEGORIES[it.catIndex];
+
+        /* =============================
+           CORRECTO
+        ============================= */
+
+        if(it.catIndex===bin.catIndex){
+
+          combo++;
+
+          const gained =
+            1 + Math.floor(combo/5);
+
+          score += gained;
+
+          burst(
+            it.x+it.size/2,
+            bin.y,
+            c.color
+          );
+
+          addFloatingText(
+            "+" + gained +
+            (combo>=5 ? " 🔥" : ""),
+            it.x+it.size/2,
+            bin.y-15,
+            c.dark
+          );
+
+        /* =============================
+           INCORRECTO
+        ============================= */
+
+        }else{
+
+          combo=0;
+
+          lives--;
+
+          burst(
+            it.x+it.size/2,
+            bin.y,
+            "#e0524d"
+          );
+
+          addFloatingText(
+            "❌ " + c.name,
+            it.x+it.size/2,
+            bin.y-15,
+            "#e0524d"
+          );
+
+          updateLivesUI();
+
+          if(lives<=0){
+
+            items.splice(i,1);
+
+            endGame();
+
+            return;
+          }
+        }
+
+        updateScoreUI();
+
+        items.splice(i,1);
+
+        continue;
+      }
+
+      /* =================================
+         RESIDUO PERDIDO
+         
+         IMPORTANTE:
+         NO QUITA VIDA.
+      ================================= */
+
+      if(it.y > GROUND_Y + 20){
+
+        combo=0;
+
+        /* Simplemente desaparece */
+
+        items.splice(i,1);
+
+        continue;
+      }
+    }
+
+    /* partículas */
+
+    for(
+      let i=particles.length-1;
+      i>=0;
+      i--
+    ){
+
+      const p=particles[i];
+
+      p.x += p.vx;
+      p.y += p.vy;
+
+      p.vy += .12;
+
+      p.life--;
+
+      if(p.life<=0){
+        particles.splice(i,1);
+      }
+    }
+
+    /* textos */
+
+    for(
+      let i=floatingTexts.length-1;
+      i>=0;
+      i--
+    ){
+
+      const t=floatingTexts[i];
+
+      t.y -= .6;
+
+      t.life--;
+
+      if(t.life<=0){
+        floatingTexts.splice(i,1);
+      }
+    }
+  }
+
+  /* =========================
+     GAME OVER
+  ========================= */
+
+  function endGame(){
+
+    state="gameover";
+
+    bestScore =
+      Math.max(
+        bestScore,
+        score
+      );
+
+    document.getElementById(
+      "finalScore"
+    ).textContent=score;
+
+    document.getElementById(
+      "bestScoreText"
+    ).textContent =
+      "Mejor puntaje: " + bestScore;
+
+    showOverlay(gameOverOverlay);
+  }
+
+  /* =========================
+     RENDER
+  ========================= */
+
+  function render(){
+
+    ctx.clearRect(
+      0,
+      0,
+      W,
+      H
+    );
+
+    drawBackground();
+
+    items.forEach(
+      drawTrashIcon
+    );
+
+    drawBin();
+
+    drawParticles();
+
+    drawFloatingTexts();
+  }
+
+  function loop(){
+
+    if(state!=="playing"){
+      return;
+    }
+
+    update();
+
+    render();
+
+    requestAnimationFrame(loop);
+  }
+
+  /* =========================
+     DIBUJO INICIAL
+  ========================= */
+
+  drawBackground();
+
+  drawBin();
+
+  updateCategoryUI();
+
+  updateLivesUI();
+
+})();
+</script>
+
+</body>
+</html>

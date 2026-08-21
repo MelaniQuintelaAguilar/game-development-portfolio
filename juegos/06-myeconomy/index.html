@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyEconomy — Semana Financiera</title>
+<style>
+:root{
+  --bg:#08131f; --panel:#10283a; --panel2:#15364b; --line:#3d6f88;
+  --text:#f5fbff; --muted:#b9ccd5; --green:#58e58e; --blue:#5cbcff;
+  --gold:#ffd463; --pink:#ff81bd; --red:#ff737b; --violet:#a88cff; --cyan:#61e6ef;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:
+radial-gradient(circle at 15% 0,#1a5775 0,transparent 35%),
+radial-gradient(circle at 85% 5%,#56386e 0,transparent 28%),
+linear-gradient(145deg,#081522,#050c12 55%,#101526);
+color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif}
+button,input{font:inherit}
+button{cursor:pointer}
+#app{width:min(1600px,100%);margin:auto;padding:12px}
+.glass{background:linear-gradient(145deg,rgba(17,48,65,.97),rgba(7,22,32,.97));border:1px solid rgba(107,173,196,.38);box-shadow:0 18px 60px #0007;backdrop-filter:blur(10px)}
+header{display:grid;grid-template-columns:270px 1fr;gap:10px;margin-bottom:10px}
+.profile{border-radius:18px;padding:11px;display:flex;gap:11px;align-items:center}
+.avatar{width:58px;height:58px;border-radius:15px;display:grid;place-items:center;font-size:31px;background:radial-gradient(circle at 30% 25%,#88d6eb,#285c73 55%,#0c2130);border:1px solid #76aebe}
+.profile b{font-size:14px}.profile small{display:block;color:var(--muted);font-size:10px;margin-top:4px}
+.stats{border-radius:18px;display:grid;grid-template-columns:repeat(5,1fr);overflow:hidden}
+.stat{padding:10px 12px;border-right:1px solid #ffffff0e}.stat:last-child{border:0}
+.stat small{display:block;color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.55px}.stat strong{display:block;font-size:17px;margin-top:5px}
+.bar{height:7px;border-radius:99px;background:#02070b;overflow:hidden;margin-top:7px;box-shadow:inset 0 2px 5px #000}
+.bar i{display:block;height:100%;width:0;border-radius:99px;transition:width .4s}
+.g{background:linear-gradient(90deg,#1fa95e,#68f09e)}.b{background:linear-gradient(90deg,#277fca,#68c9ff)}
+.p{background:linear-gradient(90deg,#c64184,#ff8bc7)}.y{background:linear-gradient(90deg,#c08c1b,#ffe38b)}
+.layout{display:grid;grid-template-columns:250px minmax(620px,1fr) 320px;gap:10px}
+.panel{border-radius:18px;padding:12px}.left{min-height:735px}.right{display:flex;flex-direction:column;gap:10px}
+h3{font-size:10px;text-transform:uppercase;letter-spacing:1px;margin:2px 0 8px;color:#e2f2f5}
+.card,.event{background:linear-gradient(145deg,#164156,#0b2230);border:1px solid #356175;border-radius:14px;padding:11px;box-shadow:inset 0 1px 0 #ffffff10}
+.card{margin-bottom:10px}.card p,.event p{font-size:10px;line-height:1.45;color:var(--muted);margin:6px 0}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:7px}.metric{background:#071722;border:1px solid #2b5061;border-radius:10px;padding:8px}.metric small{font-size:8px;color:var(--muted)}.metric b{display:block;font-size:13px;margin-top:3px}
+.world{position:relative;border-radius:20px;overflow:hidden;border:1px solid #56849a;box-shadow:0 24px 80px #0009;background:#0b1921}
+#game{display:block;width:100%;height:auto;cursor:pointer}
+.hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:#02090dde;border:1px solid #658e9e;border-radius:10px;padding:7px 12px;font-size:10px;white-space:nowrap}
+.controls{display:flex;gap:6px;flex-wrap:wrap}
+.btn{cursor:pointer;color:#fff;border:1px solid #416d81;background:linear-gradient(#193d52,#0d2b3a);border-radius:10px;padding:9px 11px;font-size:10px;transition:.15s;box-shadow:0 6px 15px #0004}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.15);border-color:#77e4ee}
+.btn.blue{background:linear-gradient(#1b638d,#0c405e);border-color:#5dbdff}.btn.green{background:linear-gradient(#19774e,#0d4e33);border-color:#59e394}.btn.pink{background:linear-gradient(#7b3964,#522446);border-color:#f17ab9}.btn.gold{background:linear-gradient(#866520,#553f12);border-color:#f4ce61}.btn.red{background:linear-gradient(#7d3b42,#51242a);border-color:#ff737b}.btn:disabled{opacity:.45;filter:grayscale(.4);cursor:not-allowed;transform:none}
+.bill{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #ffffff10}.bill:last-child{border-bottom:0}
+.bill i{font-size:20px}.bill b{font-size:10px}.bill span{font-size:9px;color:var(--muted)}.bill strong{font-size:11px}
+.paid{color:var(--green)!important}.pending{color:var(--gold)!important}
+.bottom{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px}.bottom .panel{min-height:130px}
+.log{font-size:9px;color:#c7d8df;max-height:100px;overflow:auto}.log div{padding:5px 0;border-bottom:1px solid #ffffff0c}
+.modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:15px;background:#02070dcc;backdrop-filter:blur(9px)}.modal.open{display:flex}
+.modalBox{width:min(860px,100%);max-height:92vh;overflow:auto;border-radius:22px;padding:20px;background:linear-gradient(145deg,#1c4a60,#091b28);border:1px solid #6590a1;box-shadow:0 30px 110px #000}
+.modalBox h2{margin:0 0 6px}.modalBox>p{color:var(--muted);font-size:11px;line-height:1.5}.big{font-size:34px;font-weight:900;margin:10px 0}.modalRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.shopGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:14px 0}
+.shopItem{background:linear-gradient(145deg,#1c4b61,#0c2938);border:1px solid #4b7b8f;border-radius:17px;padding:14px;box-shadow:0 14px 32px #0007,inset 0 1px 0 #ffffff12;transition:.2s}
+.shopItem:hover{transform:translateY(-3px);border-color:#7de8f1;box-shadow:0 18px 40px #0009,0 0 24px #62e3ed22}
+.shopItem .art{height:90px;border-radius:13px;background:radial-gradient(circle at 30% 22%,#ffffff22,transparent 28%),linear-gradient(145deg,#2e6a83,#15384b);display:grid;place-items:center;font-size:56px;border:1px solid #6698aa;margin-bottom:11px}
+.shopItem h4{margin:0;font-size:14px}.shopItem p{font-size:10px;color:var(--muted);line-height:1.4;margin:6px 0}.price{font-size:15px;font-weight:900;color:var(--gold)}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}.tag{font-size:8px;padding:4px 6px;border-radius:99px;background:#06131d;border:1px solid #315869;color:#bfd3da}.tag.good{color:#70efa4}.tag.bad{color:#ff848b}.tag.fun{color:#ff90c8}
+.resultGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.resultBox{background:#071822;border:1px solid #2f5667;border-radius:12px;padding:10px}.resultBox small{color:var(--muted);font-size:9px}.resultBox b{display:block;font-size:16px;margin-top:4px}
+@media(max-width:1180px){.layout{grid-template-columns:225px 1fr}.right{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr}.bottom{grid-template-columns:1fr 1fr}}
+@media(max-width:760px){header{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.layout{grid-template-columns:1fr}.left{min-height:auto}.right{display:block}.right .event{margin-top:10px}.bottom{display:block}.bottom .panel{margin-top:10px}.shopGrid,.resultGrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="app">
+<header>
+  <div class="glass profile">
+    <div class="avatar">🧑🏻</div>
+    <div><b>MyEconomy · Semana Financiera</b><small id="dayLabel">Día 1 de 7</small><small id="weekState">Semana en curso</small></div>
+  </div>
+  <div class="glass stats">
+    <div class="stat"><small>Dinero disponible</small><strong id="money">Bs 700</strong></div>
+    <div class="stat"><small>Ahorro</small><strong id="savings">Bs 0</strong><div class="bar"><i id="saveBar" class="g"></i></div></div>
+    <div class="stat"><small>Meta de ahorro</small><strong id="goalTop">Bs 500</strong><div class="bar"><i id="goalBar" class="b"></i></div></div>
+    <div class="stat"><small>Salud financiera</small><strong id="health">70/100</strong><div class="bar"><i id="healthBar" class="g"></i></div></div>
+    <div class="stat"><small>Placer</small><strong id="pleasure">50/100</strong><div class="bar"><i id="pleasureBar" class="p"></i></div></div>
+  </div>
+</header>
+
+<section class="layout">
+<aside class="glass panel left">
+  <h3>🧾 Gastos diarios obligatorios</h3>
+  <div class="card" id="billsCard"></div>
+
+  <h3>💼 Trabajo</h3>
+  <div class="card">
+    <p>Cobra tu sueldo una sola vez por día.</p>
+    <div class="big" style="font-size:24px">Bs 80</div>
+    <button id="salaryBtn" class="btn green">Cobrar sueldo</button>
+    <p id="salaryState">Disponible hoy.</p>
+  </div>
+
+  <h3>💭 Pensamiento</h3>
+  <div class="card"><p id="thoughtText">Tengo Bs 700 para empezar. Primero debo cubrir mis gastos diarios.</p></div>
+</aside>
+
+<section class="world">
+  <canvas id="game" width="1120" height="700"></canvas>
+  <div class="hint">Haz clic en edificios o monedas · WASD/Flechas para moverte · E para interactuar</div>
+</section>
+
+<aside class="right">
+  <div class="event">
+    <h3>🏦 Acciones</h3>
+    <div class="controls">
+      <button id="bankBtn" class="btn blue">Banco</button>
+      <button id="shopBtn" class="btn pink">Tienda</button>
+      <button id="homeBtn" class="btn">Hogar</button>
+      <button id="workBtn" class="btn green">Trabajo</button>
+      <button id="goalBtn" class="btn gold">Meta</button>
+    </div>
+  </div>
+
+  <div class="event">
+    <h3>🪙 Monedas del día</h3>
+    <div class="metrics">
+      <div class="metric"><small>Recogidas</small><b id="coinsCollected">0/5</b></div>
+      <div class="metric"><small>Valor total</small><b id="coinValue">Bs 0</b></div>
+    </div>
+    <p>Las monedas cambian de posición al iniciar un nuevo día.</p>
+  </div>
+
+  <div class="event">
+    <h3>❤️ Balance</h3>
+    <div class="metrics">
+      <div class="metric"><small>Estrés</small><b id="stress">25/100</b></div>
+      <div class="metric"><small>Reputación</small><b id="rep">C</b></div>
+    </div>
+    <p id="balanceText">Paga primero lo obligatorio. Después decide cuánto ahorrar o gastar.</p>
+  </div>
+
+  <div class="event">
+    <h3>📅 Avance</h3>
+    <button id="nextDayBtn" class="btn green" style="width:100%">Siguiente día</button>
+    <p id="nextDayHelp">Debes pagar todos los gastos obligatorios para avanzar.</p>
+  </div>
+</aside>
+</section>
+
+<section class="bottom">
+  <div class="glass panel"><h3>🌆 Eventos del día</h3><div class="log" id="events"></div></div>
+  <div class="glass panel"><h3>💳 Historial</h3><div class="log" id="history"></div></div>
+  <div class="glass panel"><h3>🎮 Sistema</h3><div class="controls"><button id="saveBtn" class="btn blue">Guardar</button><button id="resetBtn" class="btn red">Reiniciar</button></div></div>
+</section>
+</div>
+
+<div class="modal" id="modal"><div class="modalBox" id="modalBox"></div></div>
+
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id);};
+var canvas=$("game"),ctx=canvas.getContext("2d"),W=canvas.width,H=canvas.height;
+var modal=$("modal"),box=$("modalBox");
+var keys={up:false,down:false,left:false,right:false};
+
+var DAILY_BILLS={
+  housing:{name:"Vivienda",icon:"🏠",amount:45},
+  utilities:{name:"Servicios",icon:"💡",amount:15},
+  food:{name:"Alimentación",icon:"🥗",amount:20},
+  transport:{name:"Transporte",icon:"🚌",amount:10}
+};
+
+var state={
+  day:1,money:700,savings:0,goal:500,health:70,pleasure:50,stress:25,reputation:40,
+  salaryTaken:false,salary:80,
+  paid:{housing:false,utilities:false,food:false,transport:false},
+  x:565,y:530,speed:3.5,
+  coins:[],coinsCollected:0,coinMoney:0,
+  history:[],events:[],paused:false,
+  smart:0,impulsive:0,totalMandatory:0,totalFun:0,totalSaved:0,
+  equippedHeadphones:false,equippedGift:false,
+  thought:"Tengo Bs 700 para empezar. Primero debo cubrir mis gastos diarios.",
+  gameOver:false
+};
+
+var places=[
+  {id:"bank",name:"BANCO",icon:"🏦",cx:285,cy:255,w:150,h:105,color1:"#43a5d2",color2:"#1e5c7b"},
+  {id:"shop",name:"TIENDA",icon:"🛍️",cx:590,cy:210,w:165,h:115,color1:"#eb7469",color2:"#9a3f49"},
+  {id:"work",name:"TRABAJO",icon:"💼",cx:855,cy:255,w:155,h:110,color1:"#49aa87",color2:"#25644e"},
+  {id:"home",name:"HOGAR",icon:"🏠",cx:890,cy:500,w:170,h:118,color1:"#d89158",color2:"#7a4931"},
+  {id:"goal",name:"META",icon:"🎯",cx:300,cy:520,w:155,h:105,color1:"#a17be7",color2:"#604399"}
+];
+
+var shopItems=[
+  {icon:"🎧",name:"Auriculares premium",price:140,type:"impulsive",pleasure:18,health:-6,stress:5,thought:"Los quería mucho y los estoy disfrutando. Ahora tengo menos margen para el resto de la semana.",equip:"headphones"},
+  {icon:"🎮",name:"Videojuego",price:95,type:"impulsive",pleasure:13,health:-4,stress:3,thought:"Me divertí con la compra, pero gasté dinero que podía usar después."},
+  {icon:"🎓",name:"Curso corto",price:70,type:"smart",pleasure:4,health:6,stress:-1,thought:"No fue un gasto emocionante, pero puede ayudarme después."},
+  {icon:"💝",name:"Regalo sentimental",price:60,type:"smart",pleasure:10,health:2,stress:0,thought:"Fue un gasto sentimental y consciente. Me alegra haberlo hecho.",equip:"gift"}
+];
+
+function money(n){return "Bs "+Math.round(n).toLocaleString("es-BO");}
+function clamp(n,a,b){return Math.max(a,Math.min(b,n));}
+function rr(x,y,w,h,r){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+}
+function addHistory(t){state.history.unshift(t);state.history=state.history.slice(0,30);$("history").innerHTML=state.history.slice(0,10).map(function(x){return "<div>"+x+"</div>";}).join("");}
+function addEvent(t){state.events.unshift(t);state.events=state.events.slice(0,20);$("events").innerHTML=state.events.slice(0,9).map(function(x){return "<div>"+x+"</div>";}).join("");}
+function billsTotal(){
+  var total=0;
+  Object.keys(DAILY_BILLS).forEach(function(k){if(!state.paid[k])total+=DAILY_BILLS[k].amount;});
+  return total;
+}
+function allBillsPaid(){
+  return Object.keys(DAILY_BILLS).every(function(k){return state.paid[k];});
+}
+function renderBills(){
+  var html="";
+  Object.keys(DAILY_BILLS).forEach(function(k){
+    var b=DAILY_BILLS[k],paid=state.paid[k];
+    html+="<div class='bill'><i>"+b.icon+"</i><div><b>"+b.name+"</b><br><span class='"+(paid?"paid":"pending")+"'>"+(paid?"Pagado":"Pendiente")+"</span></div><strong>"+money(b.amount)+"</strong></div>";
+  });
+  html+="<div class='bill'><i>🧾</i><div><b>Total pendiente</b></div><strong>"+money(billsTotal())+"</strong></div>";
+  html+="<button id='payBillsBtn' class='btn gold' style='width:100%;margin-top:9px'>Pagar obligaciones</button>";
+  $("billsCard").innerHTML=html;
+  $("payBillsBtn").onclick=payBills;
+}
+function update(){
+  $("money").textContent=money(state.money);
+  $("savings").textContent=money(state.savings);
+  $("goalTop").textContent=money(state.goal);
+  $("health").textContent=Math.round(state.health)+"/100";
+  $("pleasure").textContent=Math.round(state.pleasure)+"/100";
+  $("stress").textContent=Math.round(state.stress)+"/100";
+  $("dayLabel").textContent="Día "+state.day+" de 7";
+  $("weekState").textContent=state.gameOver?"Semana finalizada":"Semana en curso";
+  $("coinsCollected").textContent=state.coinsCollected+"/5";
+  $("coinValue").textContent=money(state.coinMoney);
+  $("rep").textContent=state.reputation>=75?"A":state.reputation>=55?"B":state.reputation>=35?"C":"D";
+  $("thoughtText").textContent=state.thought;
+  $("salaryBtn").disabled=state.salaryTaken||state.gameOver;
+  $("salaryState").textContent=state.salaryTaken?"Ya cobraste hoy.":"Disponible hoy.";
+  $("nextDayBtn").disabled=!allBillsPaid()||state.gameOver;
+  $("nextDayHelp").textContent=allBillsPaid()?"Todo pagado. Ya puedes avanzar.":"Debes pagar todos los gastos obligatorios para avanzar.";
+  var pct=clamp(state.savings/state.goal*100,0,100);
+  $("saveBar").style.width=pct+"%";$("goalBar").style.width=pct+"%";
+  $("healthBar").style.width=state.health+"%";$("pleasureBar").style.width=state.pleasure+"%";
+  $("balanceText").textContent=allBillsPaid()?"Tus obligaciones están cubiertas. Ahora puedes decidir entre ahorrar o gastar.":"Todavía tienes pagos obligatorios pendientes.";
+  renderBills();
+}
+function save(){
+  localStorage.setItem("myEconomyWeekV1",JSON.stringify(state));
+  addEvent("💾 Partida guardada.");
+}
+function load(){
+  try{
+    var x=JSON.parse(localStorage.getItem("myEconomyWeekV1"));
+    if(x){for(var k in x)state[k]=x[k];}
+  }catch(e){}
+}
+function reset(){
+  if(confirm("¿Reiniciar toda la semana?")){localStorage.removeItem("myEconomyWeekV1");location.reload();}
+}
+function openModal(html){box.innerHTML=html;modal.classList.add("open");state.paused=true;}
+function closeModal(){modal.classList.remove("open");state.paused=false;update();}
+modal.addEventListener("click",function(e){if(e.target===modal)closeModal();});
+
+function generateCoins(){
+  var spots=[
+    [420,170],[705,150],[780,420],[525,390],[220,390],
+    [365,610],[960,355],[650,580],[160,245],[990,580]
+  ];
+  // shuffle
+  for(var i=spots.length-1;i>0;i--){
+    var j=Math.floor(Math.random()*(i+1));var tmp=spots[i];spots[i]=spots[j];spots[j]=tmp;
+  }
+  state.coins=spots.slice(0,5).map(function(p){return {x:p[0],y:p[1],taken:false};});
+  state.coinsCollected=0;state.coinMoney=0;
+}
+function collectCoin(i){
+  if(!state.coins[i]||state.coins[i].taken)return;
+  state.coins[i].taken=true;state.coinsCollected++;state.coinMoney+=5;state.money+=5;
+  state.pleasure=clamp(state.pleasure+1,0,100);
+  state.thought="Encontré Bs 5. Poco a poco también suma.";
+  addHistory("🪙 +Bs 5 · moneda recogida");
+  update();save();
+}
+
+function payBills(){
+  var total=billsTotal();
+  if(total===0){state.thought="Ya pagué todo lo obligatorio de hoy.";update();return;}
+  if(state.money<total){alert("No tienes suficiente dinero para cubrir los gastos obligatorios.");return;}
+  state.money-=total;state.totalMandatory+=total;
+  Object.keys(state.paid).forEach(function(k){state.paid[k]=true;});
+  state.health=clamp(state.health+5,0,100);state.stress=clamp(state.stress-6,0,100);state.reputation+=3;
+  state.thought="Ya cubrí lo necesario de hoy. Lo que queda sí puedo administrarlo con más libertad.";
+  addHistory("🧾 -"+money(total)+" · gastos obligatorios");
+  addEvent("✅ Obligaciones del día pagadas.");
+  update();save();
+}
+function takeSalary(){
+  if(state.salaryTaken){return;}
+  state.salaryTaken=true;state.money+=state.salary;state.earned=(state.earned||0)+state.salary;
+  state.thought="Cobré Bs 80. No es mucho, así que debo organizarlo bien.";
+  addHistory("💼 +Bs 80 · sueldo del día");
+  addEvent("💼 Cobraste tu sueldo diario.");
+  update();save();
+}
+function bank(){
+  openModal("<h2>🏦 Banco</h2><p>Guarda una parte de tu dinero para proteger el resto de la semana.</p><div class='metrics'><div class='metric'><small>Disponible</small><b>"+money(state.money)+"</b></div><div class='metric'><small>Ahorro</small><b>"+money(state.savings)+"</b></div></div><input id='amount' type='number' min='1' value='50' style='width:100%;margin-top:12px;padding:11px;border-radius:10px;background:#071722;border:1px solid #47758a;color:white'><div class='modalRow'><button id='deposit' class='btn green'>Depositar</button><button id='withdraw' class='btn blue'>Retirar</button><button id='close' class='btn red'>Cerrar</button></div>");
+  $("deposit").onclick=function(){
+    var n=Number($("amount").value);
+    if(n>0&&n<=state.money){state.money-=n;state.savings+=n;state.totalSaved+=n;state.health=clamp(state.health+2,0,100);state.thought="Estoy guardando dinero para no llegar vacío al final de la semana.";addHistory("🏦 Depositaste "+money(n));closeModal();save();}else alert("Cantidad no válida.");
+  };
+  $("withdraw").onclick=function(){
+    var n=Number($("amount").value);
+    if(n>0&&n<=state.savings){state.savings-=n;state.money+=n;state.thought="Estoy usando parte de mis ahorros. Espero que sea por una buena razón.";addHistory("🏦 Retiraste "+money(n));closeModal();save();}else alert("No tienes ese monto ahorrado.");
+  };
+  $("close").onclick=closeModal;
+}
+function shop(){
+  var h="<h2>🛍️ Tienda</h2><p>Puedes disfrutar tu dinero, pero recuerda que todavía quedan días por delante.</p><div class='shopGrid'>";
+  shopItems.forEach(function(x,i){
+    h+="<div class='shopItem'><div class='art'>"+x.icon+"</div><h4>"+x.name+"</h4><p>"+(x.type==="impulsive"?"Deseo personal. Aumenta mucho tu placer, pero reduce tu margen financiero.":"Gasto con una utilidad o valor personal más claro.")+"</p><div class='price'>"+money(x.price)+"</div><div class='tags'><span class='tag fun'>Placer +"+x.pleasure+"</span><span class='tag "+(x.type==="impulsive"?"bad":"good")+"'>"+x.type+"</span></div><button class='btn "+(x.type==="impulsive"?"pink":"green")+"' data-buy='"+i+"'>Comprar</button></div>";
+  });
+  h+="</div><button id='close' class='btn red'>Cerrar</button>";
+  openModal(h);
+  box.querySelectorAll("[data-buy]").forEach(function(btn){
+    btn.onclick=function(){
+      var x=shopItems[Number(btn.dataset.buy)];
+      if(state.money<x.price){alert("No tienes suficiente dinero disponible.");return;}
+      state.money-=x.price;state.totalFun+=x.price;
+      state.pleasure=clamp(state.pleasure+x.pleasure,0,100);
+      state.health=clamp(state.health+x.health,0,100);
+      state.stress=clamp(state.stress+x.stress,0,100);
+      state.thought=x.thought;
+      if(x.type==="smart"){state.smart++;state.reputation+=4;}else{state.impulsive++;state.reputation-=2;}
+      if(x.equip==="headphones")state.equippedHeadphones=true;
+      if(x.equip==="gift")state.equippedGift=true;
+      addHistory("🛍️ -"+money(x.price)+" · "+x.name);
+      closeModal();save();
+    };
+  });
+  $("close").onclick=closeModal;
+}
+function home(){
+  openModal("<h2>🏠 Hogar</h2><p>Revisa cómo va tu día antes de avanzar.</p><div class='resultGrid'><div class='resultBox'><small>Dinero</small><b>"+money(state.money)+"</b></div><div class='resultBox'><small>Ahorro</small><b>"+money(state.savings)+"</b></div><div class='resultBox'><small>Obligaciones</small><b>"+(allBillsPaid()?"Pagadas":"Pendientes")+"</b></div><div class='resultBox'><small>Placer</small><b>"+Math.round(state.pleasure)+"/100</b></div><div class='resultBox'><small>Estrés</small><b>"+Math.round(state.stress)+"/100</b></div><div class='resultBox'><small>Monedas</small><b>"+state.coinsCollected+"/5</b></div></div><button id='close' class='btn green' style='margin-top:10px'>Continuar</button>");
+  $("close").onclick=closeModal;
+}
+function goal(){
+  var pct=clamp(state.savings/state.goal*100,0,100);
+  openModal("<h2>🎯 Meta semanal</h2><p>Intenta terminar la semana con ahorro y sin descuidar tus necesidades.</p><div class='big'>"+money(state.savings)+" / "+money(state.goal)+"</div><div class='bar'><i class='y' style='width:"+pct+"%'></i></div><button id='close' class='btn green' style='margin-top:10px'>Cerrar</button>");
+  $("close").onclick=closeModal;
+}
+function work(){takeSalary();}
+
+function nextDay(){
+  if(!allBillsPaid()){alert("Debes pagar todos los gastos obligatorios antes de pasar al siguiente día.");return;}
+  if(state.day>=7){finishWeek();return;}
+  state.day++;
+  state.salaryTaken=false;
+  state.paid={housing:false,utilities:false,food:false,transport:false};
+  state.stress=clamp(state.stress+3,0,100);
+  state.pleasure=clamp(state.pleasure-2,0,100);
+  state.thought="Comienza un nuevo día. Primero revisaré mis gastos obligatorios.";
+  generateCoins();
+  addEvent("🌅 Comienza el día "+state.day+".");
+  addHistory("📅 Día "+state.day+" iniciado.");
+  update();save();
+}
+function finishWeek(){
+  if(!allBillsPaid()){alert("Debes cerrar el día 7 pagando tus obligaciones.");return;}
+  state.gameOver=true;
+  var savingsScore=clamp((state.savings/state.goal)*100,0,100);
+  var healthScore=state.health;
+  var responsibility=clamp(100-state.impulsive*10+state.smart*7,0,100);
+  var score=Math.round(savingsScore*.35+healthScore*.35+responsibility*.30);
+  var title,desc;
+  if(score>=85){title="🏆 Semana excelente";desc="Cubrir tus gastos, ahorrar y darte gustos de forma controlada te permitió terminar con una economía muy sólida.";}
+  else if(score>=70){title="🟢 Semana responsable";desc="Administraste bien tus recursos y llegaste al final con una situación estable.";}
+  else if(score>=55){title="🟡 Semana equilibrada";desc="Cumpliste con lo necesario, aunque algunas decisiones redujeron tu margen financiero.";}
+  else if(score>=40){title="🟠 Semana complicada";desc="Lograste terminar la semana, pero tus gastos y decisiones dejaron poco espacio para ahorrar.";}
+  else{title="🔴 Semana de riesgo";desc="Cumplir las obligaciones fue difícil y tu situación financiera terminó bajo presión.";}
+  openModal("<h2>"+title+"</h2><p>"+desc+"</p><div class='big'>"+score+"/100</div><div class='resultGrid'><div class='resultBox'><small>Dinero final</small><b>"+money(state.money)+"</b></div><div class='resultBox'><small>Ahorro final</small><b>"+money(state.savings)+"</b></div><div class='resultBox'><small>Salud financiera</small><b>"+Math.round(state.health)+"/100</b></div><div class='resultBox'><small>Gastos obligatorios</small><b>"+money(state.totalMandatory)+"</b></div><div class='resultBox'><small>Gastos personales</small><b>"+money(state.totalFun)+"</b></div><div class='resultBox'><small>Decisiones impulsivas</small><b>"+state.impulsive+"</b></div></div><div class='card' style='margin-top:12px'><b>Evaluación</b><p>"+(state.savings>=state.goal?"Alcanzaste tu meta de ahorro. ":"No alcanzaste toda tu meta de ahorro. ")+(state.impulsive>2?"Tus gastos impulsivos tuvieron un impacto importante.":"Tus gastos personales se mantuvieron relativamente controlados.")+"</p></div><div class='modalRow'><button id='restart' class='btn green'>Jugar otra semana</button><button id='close' class='btn blue'>Ver ciudad</button></div>");
+  $("restart").onclick=reset;$("close").onclick=closeModal;
+  update();save();
+}
+
+$("salaryBtn").onclick=takeSalary;
+$("bankBtn").onclick=bank;$("shopBtn").onclick=shop;$("homeBtn").onclick=home;$("workBtn").onclick=work;$("goalBtn").onclick=goal;
+$("nextDayBtn").onclick=function(){if(state.day===7)finishWeek();else nextDay();};
+$("saveBtn").onclick=save;$("resetBtn").onclick=reset;
+
+/* ---------- ISOMETRIC CITY ---------- */
+function iso(x,y,z){
+  return {x:560+(x-y)*34,y:105+(x+y)*18-z};
+}
+function tile(x,y,color){
+  var p=iso(x,y,0),w=34,h=18;
+  ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x+w,p.y+h);ctx.lineTo(p.x,p.y+h*2);ctx.lineTo(p.x-w,p.y+h);ctx.closePath();ctx.fill();
+}
+function block(cx,cy,w,h,height,c1,c2,c3){
+  // screen-centered isometric prism
+  var x=cx,y=cy;
+  ctx.save();
+  ctx.shadowColor="#0008";ctx.shadowBlur=18;ctx.shadowOffsetY=12;
+  ctx.fillStyle=c1;ctx.beginPath();ctx.moveTo(x,y-height);ctx.lineTo(x+w,y-height+h/2);ctx.lineTo(x,y-height+h);ctx.lineTo(x-w,y-height+h/2);ctx.closePath();ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.fillStyle=c2;ctx.beginPath();ctx.moveTo(x-w,y-height+h/2);ctx.lineTo(x,y-height+h);ctx.lineTo(x,y+h);ctx.lineTo(x-w,y+h/2);ctx.closePath();ctx.fill();
+  ctx.fillStyle=c3;ctx.beginPath();ctx.moveTo(x+w,y-height+h/2);ctx.lineTo(x,y-height+h);ctx.lineTo(x,y+h);ctx.lineTo(x+w,y+h/2);ctx.closePath();ctx.fill();
+  ctx.restore();
+}
+function drawBuilding(p){
+  block(p.cx,p.cy,p.w/2,p.h/2,95,p.color1,shade(p.color2,-10),p.color2);
+  // roof detail
+  ctx.fillStyle="#ffffff18";ctx.beginPath();ctx.ellipse(p.cx,p.cy-100,34,15,0,0,Math.PI*2);ctx.fill();
+  // windows
+  for(var row=0;row<2;row++){
+    for(var col=0;col<3;col++){
+      var wx=p.cx-p.w/2+28+col*34,wy=p.cy-55+row*28;
+      ctx.fillStyle=(row+col)%2===0?"#b9edf3":"#5f9cac";ctx.fillRect(wx,wy,13,15);
+    }
+  }
+  // door
+  ctx.fillStyle="#17303b";ctx.fillRect(p.cx-10,p.cy-16,20,30);
+  // label pin
+  ctx.fillStyle="#07141dcc";rr(p.cx-58,p.cy-140,116,31,10);ctx.fill();
+  ctx.strokeStyle="#8dc9d8";ctx.stroke();
+  ctx.textAlign="center";ctx.fillStyle="#fff";ctx.font="900 13px Segoe UI";ctx.fillText(p.icon+" "+p.name,p.cx,p.cy-119);
+}
+function shade(hex,amt){
+  var c=parseInt(hex.slice(1),16),r=(c>>16)+amt,g=((c>>8)&0x00FF)+amt,b=(c&0x0000FF)+amt;
+  r=Math.max(0,Math.min(255,r));g=Math.max(0,Math.min(255,g));b=Math.max(0,Math.min(255,b));
+  return "#"+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
+}
+function drawTree(x,y,s){
+  ctx.fillStyle="#5e4330";ctx.fillRect(x-3*s,y,6*s,18*s);
+  var g=ctx.createRadialGradient(x-5*s,y-12*s,2,x,y-10*s,19*s);g.addColorStop(0,"#9bd85e");g.addColorStop(.55,"#4c9a4f");g.addColorStop(1,"#236135");
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y-12*s,17*s,0,Math.PI*2);ctx.fill();
+}
+function drawCar(x,y,color){
+  ctx.fillStyle=color;rr(x,y,34,14,4);ctx.fill();ctx.fillStyle="#d7f2f5";ctx.fillRect(x+8,y-6,17,7);
+  ctx.fillStyle="#111";ctx.beginPath();ctx.arc(x+7,y+14,4,0,Math.PI*2);ctx.arc(x+27,y+14,4,0,Math.PI*2);ctx.fill();
+}
+function drawCoin(c,i){
+  if(c.taken)return;
+  var pulse=1+Math.sin(frame*.05+i)*.09;
+  ctx.save();ctx.translate(c.x,c.y);ctx.scale(pulse,pulse);ctx.shadowColor="#ffd45f";ctx.shadowBlur=20;
+  var g=ctx.createRadialGradient(-4,-5,1,0,0,13);g.addColorStop(0,"#fff2a2");g.addColorStop(.45,"#ffd45f");g.addColorStop(1,"#9c6a12");
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,12,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle="#7a510c";ctx.font="bold 8px Arial";ctx.textAlign="center";ctx.fillText("Bs",0,3);ctx.restore();
+}
+function drawPlayer(){
+  var px=state.x,py=state.y,bob=Math.sin(frame*.08)*1.5;
+  ctx.save();ctx.translate(px,py+bob);
+  ctx.fillStyle="#0006";ctx.beginPath();ctx.ellipse(0,26,18,6,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle="#22445c";ctx.fillRect(-8,6,6,20);ctx.fillRect(3,6,6,20);
+  var body=ctx.createLinearGradient(-12,-10,12,12);body.addColorStop(0,"#5eb7dc");body.addColorStop(1,"#17415b");ctx.fillStyle=body;rr(-12,-12,24,23,7);ctx.fill();
+  ctx.fillStyle="#edc19d";ctx.beginPath();ctx.arc(0,-22,10,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle="#1a2026";ctx.beginPath();ctx.arc(0,-25,11,Math.PI,Math.PI*2);ctx.fill();
+  if(state.equippedHeadphones){ctx.strokeStyle="#29333d";ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,-22,12,Math.PI*1.15,Math.PI*1.85);ctx.stroke();ctx.fillStyle="#34414a";ctx.beginPath();ctx.arc(-11,-21,3,0,Math.PI*2);ctx.arc(11,-21,3,0,Math.PI*2);ctx.fill();}
+  if(state.equippedGift){ctx.fillStyle="#ff87c5";ctx.fillRect(12,0,9,9);ctx.fillStyle="#ffd463";ctx.fillRect(15,0,2,9);}
+  ctx.restore();
+  // thought
+  var text=state.thought,tw=255,th=48,tx=px-tw/2,ty=py-88;if(tx<8)tx=8;if(tx+tw>W-8)tx=W-tw-8;
+  ctx.fillStyle="#f8fcfd";ctx.shadowColor="#0008";ctx.shadowBlur=14;rr(tx,ty,tw,th,14);ctx.fill();ctx.shadowBlur=0;
+  ctx.fillStyle="#f8fcfd";ctx.beginPath();ctx.arc(px-6,ty+th+6,7,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle="#193640";ctx.textAlign="center";ctx.font="700 9px Segoe UI";var s=text.length>55?text.slice(0,55)+"…":text;ctx.fillText(s,tx+tw/2,ty+20);
+  ctx.fillStyle="#5f7680";ctx.font="8px Segoe UI";ctx.fillText("MyEconomy · Día "+state.day,tx+tw/2,ty+36);
+}
+function drawCity(){
+  var sky=ctx.createLinearGradient(0,0,0,H);sky.addColorStop(0,"#8ed7ed");sky.addColorStop(.38,"#d4eff2");sky.addColorStop(.39,"#6ab36a");sky.addColorStop(1,"#437a48");ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+
+  // grass parcels
+  ctx.fillStyle="#69ad59";ctx.fillRect(0,90,W,540);
+
+  // roads in isometric-ish grid
+  ctx.fillStyle="#394c54";
+  ctx.beginPath();ctx.moveTo(0,330);ctx.lineTo(530,60);ctx.lineTo(610,100);ctx.lineTo(80,370);ctx.closePath();ctx.fill();
+  ctx.beginPath();ctx.moveTo(510,640);ctx.lineTo(1080,350);ctx.lineTo(1120,390);ctx.lineTo(555,680);ctx.closePath();ctx.fill();
+  ctx.beginPath();ctx.moveTo(270,80);ctx.lineTo(1120,520);ctx.lineTo(1080,570);ctx.lineTo(230,130);ctx.closePath();ctx.fill();
+  ctx.beginPath();ctx.moveTo(0,470);ctx.lineTo(825,40);ctx.lineTo(865,70);ctx.lineTo(40,505);ctx.closePath();ctx.fill();
+
+  // sidewalks
+  ctx.strokeStyle="#93a19e";ctx.lineWidth=14;ctx.beginPath();ctx.moveTo(0,320);ctx.lineTo(525,55);ctx.stroke();ctx.beginPath();ctx.moveTo(240,130);ctx.lineTo(1090,568);ctx.stroke();
+
+  // park
+  ctx.fillStyle="#7cc46a";ctx.beginPath();ctx.ellipse(560,410,155,105,-.12,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle="#61a958";ctx.beginPath();ctx.ellipse(560,410,128,83,-.12,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle="#6ac3df";ctx.beginPath();ctx.arc(560,410,36,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle="#d5eef1";ctx.beginPath();ctx.arc(560,410,23,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle="#6aaec5";ctx.beginPath();ctx.arc(560,410,13,0,Math.PI*2);ctx.fill();
+
+  // buildings
+  places.forEach(drawBuilding);
+
+  // trees
+  [[90,160,1],[150,210,.8],[365,130,.9],[760,115,.9],[1010,180,1],[985,300,.8],[100,570,1],[210,610,.8],[420,600,.9],[720,610,1],[940,620,.85],[430,350,.75],[680,365,.75]].forEach(function(a){drawTree(a[0],a[1],a[2]);});
+
+  // benches
+  [[475,450],[610,470],[520,330]].forEach(function(a){ctx.fillStyle="#714f34";ctx.fillRect(a[0],a[1],42,7);ctx.fillStyle="#27353b";ctx.fillRect(a[0]+5,a[1]+7,4,12);ctx.fillRect(a[0]+34,a[1]+7,4,12);});
+
+  // cars
+  var t=(frame*1.1)%1280;
+  drawCar(t-120,315,"#f0a63d");
+  drawCar(1080-(frame*.8%1250),520,"#4d97bd");
+  drawCar((frame*.65+360)%1180,470,"#d35a62");
+
+  // coins
+  state.coins.forEach(drawCoin);
+
+  // player
+  drawPlayer();
+
+  // vignette
+  var v=ctx.createRadialGradient(W/2,H/2,220,W/2,H/2,690);v.addColorStop(0,"#0000");v.addColorStop(1,"#0005");ctx.fillStyle=v;ctx.fillRect(0,0,W,H);
+}
+function clickPlace(mx,my){
+  // rough hitboxes around isometric labels/buildings
+  for(var i=0;i<places.length;i++){
+    var p=places[i];
+    if(mx>p.cx-p.w/2-20&&mx<p.cx+p.w/2+20&&my>p.cy-145&&my<p.cy+45){
+      if(p.id==="bank")bank();
+      else if(p.id==="shop")shop();
+      else if(p.id==="work")work();
+      else if(p.id==="home")home();
+      else if(p.id==="goal")goal();
+      return true;
+    }
+  }
+  return false;
+}
+canvas.addEventListener("click",function(e){
+  if(state.gameOver)return;
+  var r=canvas.getBoundingClientRect(),mx=(e.clientX-r.left)*(W/r.width),my=(e.clientY-r.top)*(H/r.height);
+  for(var i=0;i<state.coins.length;i++){
+    var c=state.coins[i];
+    if(!c.taken&&Math.hypot(mx-c.x,my-c.y)<22){collectCoin(i);return;}
+  }
+  clickPlace(mx,my);
+});
+function nearPlace(){
+  for(var i=0;i<places.length;i++){
+    var p=places[i];
+    if(Math.hypot(state.x-p.cx,state.y-p.cy)<100)return p;
+  }
+  return null;
+}
+function interact(){
+  var p=nearPlace();if(!p)return;
+  if(p.id==="bank")bank();else if(p.id==="shop")shop();else if(p.id==="work")work();else if(p.id==="home")home();else if(p.id==="goal")goal();
+}
+window.addEventListener("keydown",function(e){
+  var k=e.key.toLowerCase();
+  if(k==="w"||k==="arrowup")keys.up=true;if(k==="s"||k==="arrowdown")keys.down=true;if(k==="a"||k==="arrowleft")keys.left=true;if(k==="d"||k==="arrowright")keys.right=true;
+  if(k==="e"&&!modal.classList.contains("open"))interact();
+});
+window.addEventListener("keyup",function(e){
+  var k=e.key.toLowerCase();
+  if(k==="w"||k==="arrowup")keys.up=false;if(k==="s"||k==="arrowdown")keys.down=false;if(k==="a"||k==="arrowleft")keys.left=false;if(k==="d"||k==="arrowright")keys.right=false;
+});
+
+var frame=0;
+function loop(){
+  frame++;
+  if(!state.paused&&!state.gameOver){
+    var dx=(keys.right?1:0)-(keys.left?1:0),dy=(keys.down?1:0)-(keys.up?1:0);
+    if(dx||dy){
+      var l=Math.sqrt(dx*dx+dy*dy);state.x=clamp(state.x+dx/l*state.speed,25,W-25);state.y=clamp(state.y+dy/l*state.speed,120,H-35);
+      for(var i=0;i<state.coins.length;i++){
+        var c=state.coins[i];
+        if(!c.taken&&Math.hypot(state.x-c.x,state.y-c.y)<26)collectCoin(i);
+      }
+    }
+  }
+  drawCity();requestAnimationFrame(loop);
+}
+
+load();
+if(!state.coins||state.coins.length!==5)generateCoins();
+addEvent("🌅 Día "+state.day+": administra tu dinero y paga lo obligatorio.");
+addHistory("🎮 Comienzas con Bs 700.");
+update();
+loop();
+})();
+</script>
+</body>
+</html>

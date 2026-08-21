@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NutriFest — Aventura Saludable</title>
+<style>
+:root{--bg:#07121e;--panel:#0b1d2d;--line:#274158;--text:#f6fbff;--muted:#a9bdce;--green:#45e28b;--yellow:#ffd166;--red:#ff6578;--purple:#c084fc}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{font-family:"Segoe UI",Arial,sans-serif;background:radial-gradient(circle at 20% 10%,#153b52 0,#07121e 42%,#030810 100%);display:flex;justify-content:center;align-items:center;color:var(--text)}
+#shell{width:min(1120px,96vw)}
+.topbar{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:10px}
+.brand{font-size:clamp(25px,4vw,40px);font-weight:1000;letter-spacing:-1.5px}.brand span{color:var(--green)}
+.subtitle{color:var(--muted);font-size:12px;margin-top:2px}
+.badges{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.badge{padding:7px 10px;border:1px solid #ffffff18;background:#ffffff08;border-radius:999px;font-size:11px;color:#d7e4ee}
+#gameBox{position:relative;border:1px solid #ffffff20;border-radius:18px;overflow:hidden;box-shadow:0 25px 70px #000b;background:#071522}
+canvas{display:block;width:100%;height:auto;aspect-ratio:16/9}
+#hud{position:absolute;left:14px;right:14px;top:13px;display:grid;grid-template-columns:minmax(250px,1fr) auto auto auto;gap:8px;pointer-events:none}
+.hud{background:#06121de6;border:1px solid #ffffff18;border-radius:12px;padding:8px 11px;backdrop-filter:blur(8px)}
+.energyTop{display:flex;justify-content:space-between;font-size:11px;font-weight:900}.bar{height:10px;background:#17283a;border-radius:20px;overflow:hidden;margin-top:5px}.fill{height:100%;width:50%;background:linear-gradient(90deg,#ef4444,#f59e0b,#45e28b);transition:width .15s}
+#stateText{min-width:185px;text-align:center;font-size:11px;font-weight:900;padding-top:11px}.level{font-weight:1000;font-size:15px;padding-top:9px;white-space:nowrap}
+#pauseBtn{pointer-events:auto;border:0;color:#fff;cursor:pointer;font-weight:1000;font-size:15px;padding:8px 12px}
+#toast{position:absolute;bottom:13px;left:50%;transform:translateX(-50%);background:#06121de8;border:1px solid #ffffff18;border-radius:999px;padding:8px 14px;font-size:11px;color:#e6f0f7;white-space:nowrap;opacity:.95}
+#overlay{position:absolute;inset:0;background:#020710b9;backdrop-filter:blur(7px);display:flex;align-items:center;justify-content:center;padding:18px;z-index:5}
+#overlay.hidden{display:none}
+.card{width:min(620px,94%);background:linear-gradient(145deg,#10263bf5,#07131ff5);border:1px solid #ffffff1b;border-radius:22px;padding:27px;box-shadow:0 25px 80px #000c;text-align:center}
+.card h1{margin:0 0 8px;font-size:34px}.card p{color:#bfd0dc;line-height:1.55;margin:0 auto 15px;max-width:540px}
+.rules{display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:left;margin:16px 0}
+.rule{border:1px solid #ffffff10;background:#ffffff07;border-radius:11px;padding:10px;font-size:11px;color:#d9e5ee}.rule b{display:block;color:#fff;font-size:12px;margin-bottom:3px}
+button.primary{border:0;border-radius:12px;padding:13px 24px;background:linear-gradient(135deg,#22c55e,#149447);color:#fff;font-weight:1000;cursor:pointer;font-size:14px}
+button.primary:hover{filter:brightness(1.08)}
+footer{display:flex;justify-content:space-between;gap:10px;margin-top:8px;color:#8299ad;font-size:11px}
+kbd{background:#101f2e;border:1px solid #30465b;border-bottom-width:2px;border-radius:5px;padding:2px 6px;color:#fff}
+@media(max-width:720px){.badges{display:none}.topbar{align-items:start}.subtitle{max-width:280px}#hud{grid-template-columns:1fr auto auto}.energy{grid-column:1/-1}.rules{grid-template-columns:1fr}#stateText{min-width:130px}#toast{max-width:90%;overflow:hidden}}
+</style>
+</head>
+<body>
+<div id="shell">
+<div class="topbar">
+  <div><div class="brand">🥦 <span>NutriFest</span></div><div class="subtitle">Auto-Runner · alimentación, reflejos y decisiones saludables</div></div>
+  <div class="badges"><span class="badge">5 niveles</span><span class="badge">Dificultad progresiva</span><span class="badge">Pausa / Reanudar</span></div>
+</div>
+
+<div id="gameBox">
+<canvas id="gameCanvas" width="1000" height="562"></canvas>
+
+<div id="hud">
+  <div class="hud energy"><div class="energyTop"><span>⚡ ENERGÍA</span><span id="energyText">50 / 100</span></div><div class="bar"><div id="energyFill" class="fill"></div></div></div>
+  <div id="stateText" class="hud">● ALIMENTACIÓN</div>
+  <div id="levelText" class="hud level">NIVEL 1/5</div>
+  <button id="pauseBtn" class="hud">Ⅱ</button>
+</div>
+<div id="toast">🥦 Recoge alimentos saludables para llegar al 100%.</div>
+
+<div id="overlay">
+ <div class="card">
+   <h1 id="overlayTitle">🥦 NutriFest</h1>
+   <p id="overlayMessage"></p>
+   <div id="rules" class="rules">
+    <div class="rule">🏃 <b>Movimiento automático</b>El personaje avanza solo. Tu tarea es reaccionar.</div>
+    <div class="rule">🦘 <b>Saltar</b><kbd>ESPACIO</kbd> / <kbd>W</kbd> / <kbd>↑</kbd> o clic.</div>
+    <div class="rule">🥗 <b>Comida saludable</b>Recupera energía y suma puntos.</div>
+    <div class="rule">🍔 <b>Comida chatarra</b>Activa pesadez y reduce la energía progresivamente.</div>
+    <div class="rule">🚧 <b>Obstáculos</b>Si chocas, pierdes energía. A 0% termina la partida.</div>
+    <div class="rule">🚪 <b>Objetivo</b>Alcanza 100% para desbloquear el portal y avanzar.</div>
+   </div>
+   <button id="mainBtn" class="primary">EMPEZAR</button>
+ </div>
+</div>
+</div>
+<footer><span><kbd>ESPACIO</kbd> saltar · <kbd>P</kbd> pausar · <kbd>A/D</kbd> no son necesarios</span><span>Come bien → 100% → portal → siguiente nivel</span></footer>
+</div>
+
+<script>
+(()=>{
+"use strict";
+
+/* ===================== CONFIGURACIÓN ===================== */
+const CONFIG={
+ GRAVITY:1750,JUMP:-650,BASE_SPEED:340,MIN_SPEED:235,
+ START_ENERGY:50,MAX_ENERGY:100,
+ HEALTHY_HEAL:22,JUNK_DAMAGE:7,JUNK_SLOW:1800,
+ OBSTACLE_DAMAGE:18,
+ FLOOR:452,
+ VICTORY_DISTANCE:10000
+};
+
+const canvas=document.getElementById("gameCanvas"),ctx=canvas.getContext("2d");
+const W=canvas.width,H=canvas.height;
+const $=id=>document.getElementById(id);
+const overlay=$("overlay"),overlayTitle=$("overlayTitle"),overlayMessage=$("overlayMessage"),rules=$("rules"),mainBtn=$("mainBtn");
+const energyFill=$("energyFill"),energyText=$("energyText"),stateText=$("stateText"),levelText=$("levelText"),toast=$("toast"),pauseBtn=$("pauseBtn");
+
+let keys={},jumpQueued=false,last=0,gameState="MENU",levelIndex=0,score=0,distance=0,combo=0,spawn=0,time=0,shake=0;
+let entities=[],particles=[],floating=[],stars=[];
+let energy=CONFIG.START_ENERGY,junkPenalty=0,junkTimer=0;
+const player={x:150,y:CONFIG.FLOOR-56,w:50,h:56,vy:0,ground:true,frame:0,invuln:0};
+
+const levelNames=["Pradera del Equilibrio","Ciudad del Azúcar","Bosque de los Nutrientes","Laboratorio del Veneno","Cumbre NutriFest"];
+const levelThemes=[
+ ["#68c9ed","#d8f3b0","#1c8755"],
+ ["#f39a7a","#ffe29b","#a84e32"],
+ ["#70d69b","#b5e9d0","#176b50"],
+ ["#8e82d8","#59d5d9","#3c2779"],
+ ["#183c73","#12a68d","#082b4b"]
+];
+
+const foodTypes=[
+ {kind:"healthy",name:"Manzana",emoji:"🍎",heal:22},
+ {kind:"healthy",name:"Brócoli",emoji:"🥦",heal:28},
+ {kind:"healthy",name:"Agua",emoji:"💧",heal:18},
+ {kind:"junk",name:"Hamburguesa",emoji:"🍔"},
+ {kind:"junk",name:"Papas",emoji:"🍟"},
+ {kind:"junk",name:"Dona",emoji:"🍩"}
+];
+
+/* ===================== INPUT ===================== */
+addEventListener("keydown",e=>{
+ if(["Space","ArrowUp","KeyW","KeyP"].includes(e.code))e.preventDefault();
+ if(!keys[e.code]){
+   if(["Space","ArrowUp","KeyW"].includes(e.code))jumpQueued=true;
+   if(e.code==="KeyP")togglePause();
+ }
+ keys[e.code]=true;
+});
+addEventListener("keyup",e=>keys[e.code]=false);
+addEventListener("mousedown",()=>jumpQueued=true);
+addEventListener("touchstart",e=>{e.preventDefault();jumpQueued=true},{passive:false});
+
+/* ===================== UTILIDADES ===================== */
+const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+const rectHit=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r)}
+function toastMsg(s){toast.textContent=s;toast.style.opacity="1"}
+function addParticles(x,y,color,n=10){
+ for(let i=0;i<n;i++){let a=Math.random()*Math.PI*2,s=50+Math.random()*170;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-40,life:.4+Math.random()*.5,color,size:2+Math.random()*4})}
+}
+function addFloat(x,y,s,color){floating.push({x,y,s,color,life:1})}
+
+/* ===================== NIVEL ===================== */
+function makeLevel(){
+ entities=[];particles=[];floating=[];distance=0;score=0;combo=0;spawn=.5;energy=CONFIG.START_ENERGY;junkPenalty=0;junkTimer=0;
+ player.x=150;player.y=CONFIG.FLOOR-player.h;player.vy=0;player.ground=true;player.invuln=.5;
+ stars=Array.from({length:55},(_,i)=>({x:Math.random()*W,y:Math.random()*260,r:1+Math.random()*2,a:.3+Math.random()*.7}));
+ updateHud();
+ toastMsg(`Nivel ${levelIndex+1}: ${levelNames[levelIndex]}. Necesitas 100% para abrir el portal.`);
+}
+
+function currentSpeed(){
+ const difficulty=levelIndex*22;
+ return Math.max(CONFIG.MIN_SPEED,CONFIG.BASE_SPEED+difficulty-(junkTimer>0?155:0));
+}
+
+function spawnEntity(){
+ const r=Math.random();
+ const x=W+70;
+ // Obstáculos más frecuentes a medida que suben los niveles.
+ const obstacleChance=.20+levelIndex*.055;
+ if(r<obstacleChance){
+   entities.push({type:"obstacle",x,y:CONFIG.FLOOR-58,w:52,h:58,emoji:"🪨",hit:false});
+   return;
+ }
+ const typePool=levelIndex>=3 && r>.84 ? "junk" : (r>.58?"junk":"healthy");
+ const candidates=foodTypes.filter(f=>f.kind===typePool);
+ const f=candidates[Math.floor(Math.random()*candidates.length)];
+ const air=Math.random()<(.38+levelIndex*.05);
+ entities.push({type:f.kind,name:f.name,emoji:f.emoji,heal:f.heal,x,y:air?CONFIG.FLOOR-150:CONFIG.FLOOR-45,w:45,h:45,phase:Math.random()*6,hit:false});
+}
+
+/* ===================== JUGADOR ===================== */
+function jump(){
+ if(player.ground){player.vy=CONFIG.JUMP;player.ground=false;addParticles(player.x+25,player.y+52,"#d7f9ff",8)}
+}
+function updatePlayer(dt){
+ if(jumpQueued){jump();jumpQueued=false}
+ player.vy+=CONFIG.GRAVITY*dt;player.y+=player.vy*dt;
+ const floor=CONFIG.FLOOR-player.h;
+ if(player.y>=floor){player.y=floor;player.vy=0;player.ground=true}
+ player.invuln=Math.max(0,player.invuln-dt);player.frame+=dt*10;
+}
+
+/* ===================== COLISIONES Y REGLAS ===================== */
+function applyHealthy(e){
+ const old=energy;energy=clamp(energy+e.heal,0,100);combo++;
+ const gain=energy-old;
+ score+=60+combo*4;
+ addParticles(e.x+22,e.y+22,"#45e28b",14);addFloat(e.x+22,e.y,`+${gain} ⚡`,"#45e28b");
+ toastMsg(`🥗 ${e.name}: +${gain} energía · ¡Buen trabajo!`);
+ e.hit=true;
+ if(energy>=100){toastMsg("✨ ¡ENERGÍA AL 100%! Busca el portal dorado.");}
+}
+function applyJunk(e){
+ energy=clamp(energy-CONFIG.JUNK_DAMAGE,0,100);
+ junkTimer=CONFIG.JUNK_SLOW/1000;junkPenalty++;
+ combo=0;score=Math.max(0,score-20);
+ addParticles(e.x+22,e.y+22,"#c084fc",16);addFloat(e.x+22,e.y,"−7 ⚡","#c084fc");
+ toastMsg(`🍔 ${e.name}: −7 energía y PESadez temporal`);
+ shake=7;e.hit=true;
+}
+function hitObstacle(e){
+ if(player.invuln>0)return;
+ energy=clamp(energy-CONFIG.OBSTACLE_DAMAGE,0,100);
+ player.invuln=.8;player.vy=-330;combo=0;shake=12;
+ addParticles(player.x+25,player.y+25,"#ff6578",18);addFloat(player.x+25,player.y,"−18 ⚡","#ff6578");
+ toastMsg("🚧 ¡Cuidado! El obstáculo te quitó energía.");
+ if(energy<=0)gameOver("Tu energía llegó a 0%.");
+}
+function checkEntities(dt){
+ const speed=currentSpeed();
+ spawn-=dt;if(spawn<=0){spawnEntity();spawn=.78+Math.random()*.72;spawn*=340/speed}
+ for(const e of entities){
+   e.x-=speed*dt;
+   if(e.type!=="obstacle")e.y+=Math.sin(time*4+(e.phase||0))*0.22;
+   const box={x:e.x+6,y:e.y+6,w:e.w-12,h:e.h-12};
+   if(!e.hit&&rectHit(player,box)){
+     if(e.type==="healthy")applyHealthy(e);
+     else if(e.type==="junk")applyJunk(e);
+     else hitObstacle(e);
+   }
+ }
+ entities=entities.filter(e=>!e.hit&&e.x+e.w>-80);
+}
+
+/* ===================== PORTAL ===================== */
+function portalX(){return W-115}
+function levelDistanceTarget(){return 1700+levelIndex*600}
+function checkProgress(dt){
+ distance+=currentSpeed()*dt;score+=currentSpeed()*dt*.075;
+ if(distance>=levelDistanceTarget()&&energy>=100)levelComplete();
+}
+function levelComplete(){
+ if(gameState!=="PLAYING")return;
+ gameState="LEVEL_COMPLETE";
+ addParticles(portalX(),CONFIG.FLOOR-100,"#ffd166",35);
+ if(levelIndex===4){
+   overlayTitle.textContent="🏆 ¡NUTRIFEST COMPLETADO!";
+   overlayMessage.innerHTML="Superaste los <b>5 niveles</b> y llegaste al final con una alimentación equilibrada.<br><br>Puntuación: <b>"+Math.floor(score)+"</b>";
+   mainBtn.textContent="JUGAR DE NUEVO";
+ }else{
+   overlayTitle.textContent="✨ ¡NIVEL COMPLETADO!";
+   overlayMessage.innerHTML=`Has alcanzado el <b>100%</b> y cruzaste el portal.<br><br><b>Siguiente:</b> ${levelNames[levelIndex+1]}`;
+   mainBtn.textContent="SIGUIENTE NIVEL";
+ }
+ rules.style.display="none";overlay.classList.remove("hidden");
+}
+function gameOver(reason){
+ gameState="GAMEOVER";overlayTitle.textContent="💥 ENERGÍA AGOTADA";overlayMessage.innerHTML=reason+"<br><br>Puntuación: <b>"+Math.floor(score)+"</b>";mainBtn.textContent="REINTENTAR NIVEL";rules.style.display="none";overlay.classList.remove("hidden");
+}
+
+/* ===================== HUD ===================== */
+function updateHud(){
+ energyFill.style.width=energy+"%";energyText.textContent=Math.ceil(energy)+" / 100";
+ levelText.textContent=`NIVEL ${levelIndex+1}/5`;
+ if(junkTimer>0){stateText.textContent=`☠ PESADEZ · ${junkTimer.toFixed(1)}s`;stateText.style.color="#c084fc"}
+ else if(energy>=100){stateText.textContent="✓ 100% · PORTAL ACTIVO";stateText.style.color="#45e28b"}
+ else if(energy<30){stateText.textContent="⚠ ENERGÍA BAJA";stateText.style.color="#ff6578"}
+ else{stateText.textContent="● ALIMENTACIÓN";stateText.style.color="#dbe8f0"}
+}
+function togglePause(){
+ if(gameState==="PLAYING"){
+   gameState="PAUSED";overlayTitle.textContent="⏸️ JUEGO PAUSADO";overlayMessage.textContent="La partida está congelada. Reanuda cuando estés listo.";mainBtn.textContent="REANUDAR";rules.style.display="none";overlay.classList.remove("hidden");
+ }else if(gameState==="PAUSED"){resume()}
+}
+function resume(){gameState="PLAYING";overlay.classList.add("hidden");toastMsg("▶ Partida reanudada.");}
+
+/* ===================== DIBUJO ===================== */
+function background(){
+ const theme=levelThemes[levelIndex],g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,theme[0]);g.addColorStop(1,theme[1]);ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ // Sol/luna
+ ctx.fillStyle="#fff7c755";ctx.beginPath();ctx.arc(790,90,48,0,Math.PI*2);ctx.fill();
+ // Montañas parallax
+ for(let layer=0;layer<3;layer++){
+   ctx.fillStyle=layer===0?"#16425c55":layer===1?"#10344c66":"#0b263b77";
+   const shift=(distance*(.08+layer*.05))%500;
+   ctx.beginPath();ctx.moveTo(-500,H);
+   for(let x=-500;x<W+600;x+=120){let yy=350-layer*25-Math.sin((x+shift)*.018)*55;ctx.lineTo(x,yy)}
+   ctx.lineTo(W+500,H);ctx.closePath();ctx.fill();
+ }
+ // nubes
+ ctx.fillStyle="#ffffff24";for(let i=0;i<5;i++){let x=((i*250-distance*.035)%1250)-100,y=90+(i%3)*45;ctx.beginPath();ctx.arc(x,y,25,0,7);ctx.arc(x+32,y+3,32,0,7);ctx.arc(x+65,y+2,22,0,7);ctx.fill()}
+}
+function ground(){
+ ctx.fillStyle="#102b3d";ctx.fillRect(0,CONFIG.FLOOR,W,H-CONFIG.FLOOR);
+ ctx.fillStyle="#45e28b";ctx.fillRect(0,CONFIG.FLOOR,W,7);
+ ctx.fillStyle="#1b7550";for(let x=0;x<W;x+=35){ctx.fillRect(x,CONFIG.FLOOR+9,20,4)}
+}
+function drawFood(e){
+ const cx=e.x+e.w/2,cy=e.y+e.h/2,s=1+Math.sin(time*5+(e.phase||0))*.04;
+ ctx.save();ctx.translate(cx,cy);ctx.scale(s,s);
+ ctx.shadowBlur=18;ctx.shadowColor=e.type==="healthy"?"#45e28b":"#c084fc";
+ ctx.fillStyle="#06121dbb";ctx.beginPath();ctx.arc(0,0,25,0,Math.PI*2);ctx.fill();
+ ctx.shadowBlur=0;ctx.font="31px 'Segoe UI Emoji'";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(e.emoji,0,1);
+ ctx.font="bold 9px Segoe UI";ctx.fillStyle="#fff";ctx.fillText(e.name,0,34);ctx.restore();
+}
+function drawObstacle(e){
+ const x=e.x,y=e.y;
+ ctx.fillStyle="#0005";ctx.beginPath();ctx.ellipse(x+26,CONFIG.FLOOR+3,30,7,0,0,7);ctx.fill();
+ ctx.font="45px 'Segoe UI Emoji'";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("🪨",x+26,y+28);
+}
+function drawPlayer(){
+ const x=player.x,y=player.y,step=player.ground?Math.sin(player.frame)*4:0;
+ ctx.save();if(player.invuln>0&&Math.floor(player.invuln*15)%2===0)ctx.globalAlpha=.4;
+ // sombra
+ ctx.fillStyle="#0005";ctx.beginPath();ctx.ellipse(x+25,CONFIG.FLOOR+4,27,7,0,0,7);ctx.fill();
+ // mochila
+ ctx.fillStyle="#17445b";roundRect(x-4,y+18,13,28,5);ctx.fill();
+ // cuerpo
+ ctx.fillStyle="#0f766e";roundRect(x+7,y+17,37,28,10);ctx.fill();
+ ctx.strokeStyle="#8ef3c0";ctx.lineWidth=2;ctx.stroke();
+ // cabeza/visor
+ ctx.fillStyle="#081522";roundRect(x+11,y+5,29,20,8);ctx.fill();
+ ctx.fillStyle="#67e8f9";ctx.beginPath();ctx.arc(x+20,y+15,3.3,0,7);ctx.arc(x+31,y+15,3.3,0,7);ctx.fill();
+ // antena
+ ctx.strokeStyle="#dffaff";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x+26,y+5);ctx.lineTo(x+26,y-5);ctx.stroke();ctx.fillStyle="#ffd166";ctx.beginPath();ctx.arc(x+26,y-7,4,0,7);ctx.fill();
+ // brazos
+ ctx.strokeStyle="#dce9f2";ctx.lineWidth=5;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(x+7,y+25);ctx.lineTo(x-1,y+31+step);ctx.stroke();ctx.beginPath();ctx.moveTo(x+43,y+25);ctx.lineTo(x+51,y+31-step);ctx.stroke();
+ // piernas
+ ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(x+18,y+45);ctx.lineTo(x+16+step,y+53);ctx.stroke();ctx.beginPath();ctx.moveTo(x+34,y+45);ctx.lineTo(x+36-step,y+53);ctx.stroke();
+ // medidor
+ ctx.fillStyle="#07121dcc";roundRect(x+4,y-18,42,7,4);ctx.fill();ctx.fillStyle=energy>70?"#45e28b":energy>30?"#ffd166":"#ff6578";roundRect(x+5,y-17,40*(energy/100),5,3);ctx.fill();
+ ctx.restore();
+}
+function drawPortal(){
+ const active=energy>=100&&distance>=levelDistanceTarget();
+ const x=portalX(),y=CONFIG.FLOOR-105;
+ ctx.save();ctx.shadowBlur=active?30:8;ctx.shadowColor=active?"#ffd166":"#65758a";
+ ctx.fillStyle=active?"#f59e0b":"#334155";roundRect(x,y,58,105,12);ctx.fill();ctx.shadowBlur=0;
+ ctx.fillStyle=active?"#fff0a6":"#94a3b8";roundRect(x+8,y+8,42,89,9);ctx.fill();
+ ctx.font="28px 'Segoe UI Emoji'";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(active?"🚪":"🔒",x+29,y+51);
+ ctx.font="bold 10px Segoe UI";ctx.fillStyle="#fff";ctx.fillText(active?"ENTRAR":"100% + META",x+29,y-10);ctx.restore();
+}
+function drawEffects(dt){
+ for(const p of particles){p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=500*dt;ctx.globalAlpha=Math.max(0,p.life/.8);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,7);ctx.fill()}
+ for(const f of floating){f.life-=dt;f.y-=35*dt;ctx.globalAlpha=Math.max(0,f.life);ctx.font="bold 14px Segoe UI";ctx.textAlign="center";ctx.fillStyle=f.color;ctx.fillText(f.s,f.x,f.y)}
+ ctx.globalAlpha=1;particles=particles.filter(p=>p.life>0);floating=floating.filter(f=>f.life>0);
+}
+function draw(){
+ ctx.save();if(shake>0)ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);
+ background();ground();drawPortal();
+ for(const e of entities){if(e.x>W+50||e.x+e.w<-50)continue;if(e.type==="obstacle")drawObstacle(e);else drawFood(e)}
+ drawPlayer();drawEffects(1/60);
+ ctx.restore();
+ // guía de meta
+ if(gameState==="PLAYING"&&energy<100){ctx.fillStyle="#fff9";ctx.font="bold 11px Segoe UI";ctx.textAlign="center";ctx.fillText("Necesitas 100% para activar el portal",W/2,CONFIG.FLOOR-18)}
+}
+
+/* ===================== BUCLE ===================== */
+function update(dt){
+ if(gameState!=="PLAYING")return;
+ time+=dt;shake=Math.max(0,shake-30*dt);
+ if(junkTimer>0)junkTimer=Math.max(0,junkTimer-dt);
+ updatePlayer(dt);checkEntities(dt);checkProgress(dt);updateHud();
+}
+function loop(t){
+ const dt=Math.min(.033,(t-last)/1000||0);last=t;
+ update(dt);draw();requestAnimationFrame(loop);
+}
+
+/* ===================== CONTROLES DE INTERFAZ ===================== */
+mainBtn.addEventListener("click",()=>{
+ if(gameState==="MENU"){levelIndex=0;makeLevel();gameState="PLAYING";overlay.classList.add("hidden");toastMsg("🏃 ¡Corre! Recoge comida saludable y evita obstáculos.")}
+ else if(gameState==="PAUSED")resume();
+ else if(gameState==="GAMEOVER"){makeLevel();gameState="PLAYING";overlay.classList.add("hidden")}
+ else if(gameState==="LEVEL_COMPLETE"){
+   if(levelIndex===4){levelIndex=0;makeLevel();gameState="PLAYING";overlay.classList.add("hidden")}
+   else{levelIndex++;makeLevel();gameState="PLAYING";overlay.classList.add("hidden");toastMsg(`🚀 Nivel ${levelIndex+1}: ${levelNames[levelIndex]}`)}
+ }
+});
+pauseBtn.addEventListener("click",togglePause);
+
+/* arranque */
+makeLevel();
+overlayTitle.textContent="🥦 NutriFest";
+overlayMessage.innerHTML="Un auto-runner donde <b>tú decides cómo alimentarte</b>. Esquiva obstáculos, recoge alimentos saludables y consigue <b>100% de energía</b> para desbloquear el portal.<br><br>La dificultad aumenta progresivamente en cada nivel.";
+requestAnimationFrame(t=>{last=t;requestAnimationFrame(loop)});
+})();
+</script>
+</body>
+</html>

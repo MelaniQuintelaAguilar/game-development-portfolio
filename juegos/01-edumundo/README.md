@@ -304,14 +304,19 @@ En una próxima versión me gustaría explorar:
 - una mejor adaptación a dispositivos móviles.
 
 ---
-
 ## EJECUCIÓN
 
-Actualmente EduMundo puede ejecutarse localmente abriendo:
+EduMundo puede ejecutarse directamente desde el navegador, sin instalaciones adicionales.
 
-```text
-index.html
-```
+<p align="center">
+  <a href="https://melaniquintelaaguilar.github.io/game-development-portfolio/juegos/01-edumundo/">
+    <strong>🎮 JUGAR EDUMUNDO</strong>
+  </a>
+</p>
+
+<p align="center">
+  <sub>Disponible mediante GitHub Pages</sub>
+</p>
 
 <br>
 

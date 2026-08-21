@@ -192,9 +192,18 @@ Cada proyecto explora un aspecto diferente del diseño y desarrollo de videojueg
 </p>
 
 <p align="center">
-  <a href="juegos/01-edumundo/">📂 Ver proyecto</a>
+  <a href="https://melaniquintelaaguilar.github.io/game-development-portfolio/juegos/01-edumundo/">
+    <kbd>🎮 JUGAR</kbd>
+  </a>
+  &nbsp;
+  <a href="https://github.com/MelaniQuintelaAguilar/game-development-portfolio/tree/main/juegos/01-edumundo">
+    <kbd>📂 PROYECTO</kbd>
+  </a>
+  &nbsp;
+  <a href="juegos/01-edumundo/README.md">
+    <kbd>📖 DOCUMENTACIÓN</kbd>
+  </a>
 </p>
-
 
 <a id="ecofest"></a>
 
@@ -250,6 +259,18 @@ Cada proyecto explora un aspecto diferente del diseño y desarrollo de videojueg
 </p>
 
 <p align="center">
+  <a href="https://melaniquintelaaguilar.github.io/game-development-portfolio/juegos/02-ecofest/">
+    <kbd>🎮 JUGAR</kbd>
+  </a>
+  &nbsp;
+  <a href="https://github.com/MelaniQuintelaAguilar/game-development-portfolio/tree/main/juegos/02-ecofest">
+    <kbd>📂 PROYECTO</kbd>
+  </a>
+  &nbsp;
+  <a href="juegos/02-ecofest/README.md">
+    <kbd>📖 DOCUMENTACIÓN</kbd>
+  </a>
+</p>
   <a href="juegos/02-ecofest/">📂 Ver proyecto</a>
 </p>
 
@@ -307,6 +328,18 @@ Cada proyecto explora un aspecto diferente del diseño y desarrollo de videojueg
 </p>
 
 <p align="center">
+  <a href="https://melaniquintelaaguilar.github.io/game-development-portfolio/juegos/03-nutrifest/">
+    <kbd>🎮 JUGAR</kbd>
+  </a>
+  &nbsp;
+  <a href="https://github.com/MelaniQuintelaAguilar/game-development-portfolio/tree/main/juegos/03-nutrifest">
+    <kbd>📂 PROYECTO</kbd>
+  </a>
+  &nbsp;
+  <a href="juegos/03-nutrifest/README.md">
+    <kbd>📖 DOCUMENTACIÓN</kbd>
+  </a>
+</p>
   <a href="juegos/03-nutrifest/">📂 Ver proyecto</a>
 </p>
 
@@ -364,7 +397,17 @@ Cada proyecto explora un aspecto diferente del diseño y desarrollo de videojueg
 </p>
 
 <p align="center">
-  <a href="juegos/04-waterfest/">📂 Ver proyecto</a>
+  <a href="https://melaniquintelaaguilar.github.io/game-development-portfolio/juegos/04-waterfest/">
+    <kbd>🎮 JUGAR</kbd>
+  </a>
+  &nbsp;
+  <a href="https://github.com/MelaniQuintelaAguilar/game-development-portfolio/tree/main/juegos/04-waterfest">
+    <kbd>📂 PROYECTO</kbd>
+  </a>
+  &nbsp;
+  <a href="juegos/04-waterfest/README.md">
+    <kbd>📖 DOCUMENTACIÓN</kbd>
+  </a>
 </p>
 
 
@@ -421,7 +464,17 @@ Cada proyecto explora un aspecto diferente del diseño y desarrollo de videojueg
 </p>
 
 <p align="center">
-  <a href="juegos/05-bully/">📂 Ver proyecto</a>
+  <a href="https://melaniquintelaaguilar.github.io/game-development-portfolio/juegos/05-bully/">
+    <kbd>🎮 JUGAR</kbd>
+  </a>
+  &nbsp;
+  <a href="https://github.com/MelaniQuintelaAguilar/game-development-portfolio/tree/main/juegos/05-bully">
+    <kbd>📂 PROYECTO</kbd>
+  </a>
+  &nbsp;
+  <a href="juegos/05-bully/README.md">
+    <kbd>📖 DOCUMENTACIÓN</kbd>
+  </a>
 </p>
 
 <a id="myeconomy"></a>
@@ -477,7 +530,17 @@ Cada proyecto explora un aspecto diferente del diseño y desarrollo de videojueg
 </p>
 
 <p align="center">
-  <a href="juegos/06-myeconomy/">📂 Ver proyecto</a>
+  <a href="https://melaniquintelaaguilar.github.io/game-development-portfolio/juegos/06-myeconomy/">
+    <kbd>🎮 JUGAR</kbd>
+  </a>
+  &nbsp;
+  <a href="https://github.com/MelaniQuintelaAguilar/game-development-portfolio/tree/main/juegos/06-myeconomy">
+    <kbd>📂 PROYECTO</kbd>
+  </a>
+  &nbsp;
+  <a href="juegos/06-myeconomy/README.md">
+    <kbd>📖 DOCUMENTACIÓN</kbd>
+  </a>
 </p>
 
 ---

@@ -2,7 +2,7 @@
   <sub>LEVEL 05 · STORYTELLING</sub>
 </p>
 
-<h1 align="center">💬 Bully</h1>
+<h1 align="center">💬 Detrás de la pantalla</h1>
 
 <p align="center">
   <code>NARRATIVO</code>
@@ -19,7 +19,7 @@
 <br>
 
 <p align="center">
-  <img src="../../assets/capturas/bully/inicio.png" alt="Pantalla inicial de Bully" width="700">
+  <img src="../../assets/capturas/bully/inicio.png" alt="Pantalla inicial de Detrás de la pantalla" width="700">
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
   <sub>Una historia que cambia según lo que decides hacer.</sub>
 </p>
 
-**Bully** es un prototipo narrativo centrado en las consecuencias del ciberbullying.
+**Detrás de la pantalla** es un prototipo narrativo centrado en las consecuencias del ciberbullying.
 
 El jugador controla a **Masteo**, un joven que utiliza una cuenta anónima para molestar a otras personas en redes sociales sin considerar inicialmente el efecto real de sus acciones.
 
@@ -62,7 +62,7 @@ A partir de ese momento, las decisiones del jugador determinan si Masteo contin�
   Explorar la historia de Masteo y experimentar cómo sus decisiones modifican sus relaciones y su desenlace.
 </p>
 
-Bully no plantea el objetivo como una puntuación tradicional.
+Detrás de la pantalla no plantea el objetivo como una puntuación tradicional.
 
 El progreso ocurre a través de la **exploración, interacción y toma de decisiones**.
 
@@ -137,7 +137,7 @@ Estas variables representan el estado de Masteo y ayudan a visualizar cómo sus 
 
 ## ESTRUCTURA NARRATIVA
 
-Bully utiliza una **narrativa emergente**.
+Detrás de la pantalla utiliza una **narrativa emergente**.
 
 La historia posee acontecimientos definidos, pero permite que el jugador tome decisiones que modifican el rumbo del personaje.
 
@@ -273,7 +273,7 @@ El cambio no elimina lo sucedido, pero comienza un proceso de reparación median
   <i>La consecuencia se muestra antes de explicarse.</i>
 </p>
 
-Uno de los objetivos principales de Bully fue aplicar el principio **show, don't tell**.
+Uno de los objetivos principales de Detrás de la pantalla fue aplicar el principio **show, don't tell**.
 
 En lugar de detener la historia para explicar directamente que el ciberbullying tiene consecuencias, el jugador puede observarlas mediante:
 
@@ -298,7 +298,7 @@ De esta forma, el mensaje se comunica principalmente mediante **situaciones, acc
 <br>
 
 <p align="center">
-  <img src="../../assets/capturas/bully/gameplay.png" alt="Gameplay de Bully" width="800">
+  <img src="../../assets/capturas/bully/gameplay.png" alt="Gameplay de Detrás de la pantalla" width="800">
 </p>
 
 <p align="center">
@@ -308,7 +308,7 @@ De esta forma, el mensaje se comunica principalmente mediante **situaciones, acc
 <br>
 
 <p align="center">
-  <img src="../../assets/capturas/bully/resultado.png" alt="Desenlace de Bully" width="700">
+  <img src="../../assets/capturas/bully/resultado.png" alt="Desenlace de Detrás de la pantalla" width="700">
 </p>
 
 <p align="center">
@@ -390,7 +390,7 @@ La práctica combinó el diseño narrativo con herramientas destinadas a represe
   <i>Contar una historia en un videojuego también significa dejar que el jugador participe en ella.</i>
 </p>
 
-Bully me permitió comprender que el storytelling en videojuegos no depende únicamente de escribir una historia.
+Detrás de la pantalla me permitió comprender que el storytelling en videojuegos no depende únicamente de escribir una historia.
 
 Las **acciones del jugador pueden convertirse en parte de la narrativa**.
 
@@ -449,13 +449,13 @@ En una próxima versión me gustaría explorar:
 
 ## EJECUCIÓN
 
-Bully puede jugarse directamente desde el navegador sin instalar software adicional.
+Detrás de la pantalla puede jugarse directamente desde el navegador sin instalar software adicional.
 
 <br>
 
 <p align="center">
   <a href="https://melaniquintelaaguilar.github.io/game-development-portfolio/juegos/05-bully/">
-    <b>💬 JUGAR BULLY</b>
+    <b>💬 JUGAR DETRÁS DE LA PANTALLA</b>
   </a>
 </p>
 

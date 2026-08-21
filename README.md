@@ -84,7 +84,7 @@ Actualmente continúo aprendiendo y experimentando con diferentes conceptos de d
 <img src="assets/capturas/bully/inicio.png" width="280" alt="Bully">
 </a>
 <br>
-<b>💬 Bully</b>
+<b>💬 Detrás de la pantalla</b>
 <br>
 <sub>Narrativa · Storytelling</sub>
 </td>
@@ -415,7 +415,7 @@ Cada proyecto explora un aspecto diferente del diseño y desarrollo de videojueg
   <sub>LEVEL 05 · STORYTELLING</sub>
 </p>
 
-<h2 align="center">💬 Bully</h2>
+<h2 align="center">💬 Detrás de la pantalla</h2>
 
 <p align="center">
   <code>NARRATIVO</code>
@@ -429,7 +429,7 @@ Cada proyecto explora un aspecto diferente del diseño y desarrollo de videojueg
   <img src="assets/capturas/bully/gameplay.png" alt="Gameplay de Bully" width="800">
 </p>
 
-**Bully** es un prototipo narrativo centrado en las consecuencias del ciberbullying. A través de las decisiones del jugador, la historia muestra cómo las acciones del personaje afectan a otras personas y cómo sus elecciones pueden conducirlo hacia diferentes caminos.
+**Detrás de la pantalla** es un prototipo narrativo centrado en las consecuencias del ciberbullying. A través de las decisiones del jugador, la historia muestra cómo las acciones del personaje afectan a otras personas y cómo sus elecciones pueden conducirlo hacia diferentes caminos.
 
 <p align="center">
   🌐 <b>HTML · CSS · JavaScript</b>

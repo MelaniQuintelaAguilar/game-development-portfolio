@@ -200,8 +200,8 @@ Cada proyecto explora un aspecto diferente del diseño y desarrollo de videojueg
     <kbd>📂 PROYECTO</kbd>
   </a>
   &nbsp;
-  <a href="juegos/01-edumundo/README.md">
-    <kbd>📖 DOCUMENTACIÓN</kbd>
+  <a href="https://github.com/MelaniQuintelaAguilar/game-development-portfolio/blob/main/juegos/01-edumundo/README.md">
+  <kbd>📖 DOCUMENTACIÓN</kbd>
   </a>
 </p>
 
@@ -235,7 +235,7 @@ Cada proyecto explora un aspecto diferente del diseño y desarrollo de videojueg
   ❤️ <b>3 errores permitidos</b>
 </p>
 
-<details>
+<details markdown="1">
 <summary><b>🎮 Ver detalles del juego</b></summary>
 
 <br>
@@ -267,7 +267,7 @@ Cada proyecto explora un aspecto diferente del diseño y desarrollo de videojueg
     <kbd>📂 PROYECTO</kbd>
   </a>
   &nbsp;
-  <a href="juegos/02-ecofest/README.md">
+  <a href="https://github.com/MelaniQuintelaAguilar/game-development-portfolio/blob/main/juegos/02-ecofest/README.md">
     <kbd>📖 DOCUMENTACIÓN</kbd>
   </a>
 </p>
@@ -305,7 +305,7 @@ Cada proyecto explora un aspecto diferente del diseño y desarrollo de videojueg
   🍎 <b>Alimentación saludable</b>
 </p>
 
-<details>
+<details markdown="1">
 <summary><b>🎮 Ver detalles del juego</b></summary>
 
 <br>
@@ -336,7 +336,7 @@ Cada proyecto explora un aspecto diferente del diseño y desarrollo de videojueg
     <kbd>📂 PROYECTO</kbd>
   </a>
   &nbsp;
-  <a href="juegos/03-nutrifest/README.md">
+  <a href="https://github.com/MelaniQuintelaAguilar/game-development-portfolio/blob/main/juegos/03-nutrifest/README.md">
     <kbd>📖 DOCUMENTACIÓN</kbd>
   </a>
 </p>
@@ -374,7 +374,7 @@ Cada proyecto explora un aspecto diferente del diseño y desarrollo de videojueg
   👤 <b>Diseño centrado en el jugador</b>
 </p>
 
-<details>
+<details markdown="1">
 <summary><b>🎮 Ver detalles del juego</b></summary>
 
 <br>
@@ -405,7 +405,7 @@ Cada proyecto explora un aspecto diferente del diseño y desarrollo de videojueg
     <kbd>📂 PROYECTO</kbd>
   </a>
   &nbsp;
-  <a href="juegos/04-waterfest/README.md">
+  <a href="https://github.com/MelaniQuintelaAguilar/game-development-portfolio/blob/main/juegos/04-waterfest/README.md">
     <kbd>📖 DOCUMENTACIÓN</kbd>
   </a>
 </p>
@@ -441,7 +441,7 @@ Cada proyecto explora un aspecto diferente del diseño y desarrollo de videojueg
   🔀 <b>Decisiones y consecuencias</b>
 </p>
 
-<details>
+<details markdown="1">
 <summary><b>🎮 Ver detalles del juego</b></summary>
 
 <br>
@@ -472,7 +472,7 @@ Cada proyecto explora un aspecto diferente del diseño y desarrollo de videojueg
     <kbd>📂 PROYECTO</kbd>
   </a>
   &nbsp;
-  <a href="juegos/05-bully/README.md">
+  <a href="https://github.com/MelaniQuintelaAguilar/game-development-portfolio/blob/main/juegos/05-bully/README.md">
     <kbd>📖 DOCUMENTACIÓN</kbd>
   </a>
 </p>
@@ -507,7 +507,7 @@ Cada proyecto explora un aspecto diferente del diseño y desarrollo de videojueg
   📘 <b>Diseñado mediante GDD</b>
 </p>
 
-<details>
+<details markdown="1">
 <summary><b>🎮 Ver detalles del juego</b></summary>
 
 <br>
@@ -538,7 +538,7 @@ Cada proyecto explora un aspecto diferente del diseño y desarrollo de videojueg
     <kbd>📂 PROYECTO</kbd>
   </a>
   &nbsp;
-  <a href="juegos/06-myeconomy/README.md">
+  <a href="https://github.com/MelaniQuintelaAguilar/game-development-portfolio/blob/main/juegos/06-myeconomy/README.md">
     <kbd>📖 DOCUMENTACIÓN</kbd>
   </a>
 </p>

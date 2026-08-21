@@ -169,7 +169,7 @@ Cada proyecto explora un aspecto diferente del diseño y desarrollo de videojueg
   👤 <b>1.º de secundaria</b>
 </p>
 
-<details>
+<details markdown="1">
 <summary><b>🎮 Ver detalles del juego</b></summary>
 
 <br>

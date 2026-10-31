@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>¡Yeti-enes que correr! | Portal Oficial — Carrera por el Campus</title>
+  <!-- Tipografías de alta legibilidad -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+
+  <!-- Barra de progreso de lectura (UX) -->
+  <div class="scroll-progress" id="scroll-progress"></div>
+
+  <!-- 1. ENCABEZADO DE NAVEGACIÓN FIJO (Barra guinda mejorada) -->
+  <header class="navbar" id="navbar">
+    <div class="nav-wrapper">
+      <a href="#inicio" class="brand">
+        <!-- Reemplazo de la Y por la imagen de la mascota generada -->
+        <img src="../../assets/capturas/yetirunner/logo-yeti.png" alt="Insignia Yeti" class="brand-logo-img" />
+        <div class="brand-info">
+          <span class="brand-name">¡YETI-ENES QUE CORRER!</span>
+          <span class="brand-tag">CAMPUS RUNNER 3D</span>
+        </div>
+      </a>
+
+      <!-- Botón de sonido interactivo en la barra (UX) -->
+      <button class="sound-toggle-btn" id="sound-toggle-btn" title="Activar/Desactivar efectos del portal">
+        🔊 Sonido: ON
+      </button>
+
+      <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Abrir menú">
+        ☰
+      </button>
+
+      <nav class="nav-menu" id="nav-menu">
+        <a href="#historia" class="nav-item">Historia</a>
+        <a href="#personaje" class="nav-item">Personaje</a>
+        <a href="#mecanicas" class="nav-item">Mecánicas</a>
+        <a href="#datos" class="nav-item">Datos</a>
+        <a href="#jugar" class="nav-btn-cta"> JUGAR AHORA</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 2. SECCIÓN PRINCIPAL (HERO FULL-SCREEN) -->
+  <section id="inicio" class="hero-section">
+    <div class="container hero-grid">
+      <div class="hero-content">
+        <div class="tech-pill">
+          <span class="pulse-dot"></span>
+          CARRERA INFINITA 3D / NAVEGADOR WEB
+        </div>
+
+        <h1 class="hero-title">
+          ¡YETI-ENES
+          <span>QUE CORRER!</span>
+        </h1>
+
+        <p class="hero-lead">
+          ¡Evita los obstáculos del campus y llega a tiempo a tu examen final!
+        </p>
+
+        <p class="hero-text">
+          Te quedaste dormido antes de la defensa final en vivo y solo tienes unos minutos. Recorre a toda velocidad los pasillos y patios de la universidad, esquiva mochilas, libros y letreros colgantes con <strong>tres vidas disponibles y una sola misión: alcanzar los 1000 puntos</strong>.
+        </p>
+
+        <div class="hero-cta-group">
+          <a href="#jugar" class="btn-primary">▶ JUGAR AHORA</a>
+          <a href="#historia" class="btn-outline">VER HISTORIA →</a>
+        </div>
+
+        <!-- Panel de métricas rápidas -->
+        <div class="hero-metrics">
+          <div class="quick-stat">
+            <span class="stat-val" id="hero-score-counter">0 / 1000</span>
+            <span class="stat-lbl">Simulador de Puntos</span>
+            <button class="btn-mini-action" id="btn-simulate-points" style="margin-top: 5px;">⚡ Sumar +100</button>
+          </div>
+          <div class="quick-stat">
+            <span class="stat-val">3 VIDAS</span>
+            <span class="stat-lbl">Oportunidades</span>
+          </div>
+          <div class="quick-stat">
+            <span class="stat-val">Teclas ↑ / ↓</span>
+            <span class="stat-lbl">Salto y Agache</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Elemento gráfico principal -->
+      <div class="hero-showcase">
+        <div class="showcase-card">
+          <img 
+            src="../../assets/capturas/yetirunner/yeti-portada.png" 
+            alt="Personaje 3D El Yeti Estudiante" 
+            class="zoomable-img"
+          />
+          <div class="showcase-footer">
+            <span>Mascota: <strong>El Yeti Estudiante</strong></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. HISTORIA -->
+  <section id="historia" class="section-block bg-alt">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow">01 / UNIVERSO NARRATIVO</span>
+        <h2 class="section-title">Historia y Contexto del Campus</h2>
+        <p class="section-subtitle">
+          Una carrera emocionante por los pasillos interiores, jardines y laboratorios de la universidad donde el tiempo corre en contra.
+        </p>
+      </div>
+
+      <div class="story-cards">
+        <article class="surface-card">
+          <div class="card-badge">CONTEXTO NARRATIVO</div>
+          <h3>El Campus y la Problemática Inicial</h3>
+          <p>
+            El juego se desarrolla en el campus de la universidad, recorriendo los pasillos de piso cerámico, dispensadores de agua, vistas hacia los jardines y puertas de laboratorios.
+          </p>
+          <p>
+            Al principio, el Yeti Universitario camina tranquilo con su chamarra guinda y su bolso cruzado, confiado de que tiene tiempo de sobra. Sin embargo, al mirar su reloj de pulsera en el patio, entra en pánico: <strong>faltan muy pocos minutos para que se cierre el laboratorio de desarrollo</strong>.
+          </p>
+        </article>
+
+        <article class="surface-card">
+          <div class="card-badge">ARCO ARGUMENTAL</div>
+          <h3>La Carrera por el Éxito</h3>
+          <p>
+            Para llegar a la defensa final y no perder la materia, el Yeti debe emprender una veloz carrera continua esquivando todos los objetos cotidianos olvidados en el camino.
+          </p>
+          <p>
+            El juego construye una <strong>secuencia única en tiempo real</strong>: cada partida genera un camino aleatorio de obstáculos que exige reflejos rápidos para conseguir la victoria (llegar al Aula 101) o enfrentar la derrota tras tropezar y agotar tus vidas.
+          </p>
+        </article>
+      </div>
+
+      <div class="story-visuals">
+        <div class="visual-box">
+          <img 
+            src="../../assets/capturas/yetirunner/historia-1.png" 
+            alt="Storytelling - Inicio del pánico" 
+            class="zoomable-img"
+          />
+          <div class="visual-caption">
+            <strong>El descubrimiento:</strong> El Yeti mira su reloj y asustado comienza a correr por el patio saltando pilas de libros y mochilas.
+          </div>
+        </div>
+
+        <div class="visual-box">
+          <img 
+            src="../../assets/capturas/yetirunner/historia-2.png" 
+            alt="Storytelling - Destino del examen" 
+            class="zoomable-img"
+          />
+          <div class="visual-caption">
+            <strong>El desenlace:</strong> Celebración al cruzar la puerta del aula de cómputo o el agotamiento tras tropezar en el camino.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. PERSONAJE -->
+  <section id="personaje" class="section-block">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow">02 / NUESTRA MASCOTA</span>
+        <h2 class="section-title">El Yeti Estudiante</h2>
+        <p class="section-subtitle">
+          Un diseño propio y colorido, cargado de detalles divertidos para ofrecer un gran contraste durante la carrera.
+        </p>
+      </div>
+
+      <div class="character-grid">
+        <div class="character-preview">
+          <img 
+            src="../../assets/capturas/yetirunner/personaje-yeti.png" 
+            alt="El Yeti Estudiante" 
+            class="zoomable-img"
+          />
+        </div>
+
+        <div class="character-specs">
+          <div class="spec-item">
+            <div class="spec-number">01</div>
+            <div>
+              <h3>Chamarra Universitaria y Pelaje</h3>
+              <p>
+                Un Yeti amigable de pelaje blanco texturizado que viste la tradicional chamarra universitaria en color guinda y gris con botones frontales, haciéndolo visible al instante en cualquier pasillo.
+              </p>
+            </div>
+          </div>
+
+          <div class="spec-item">
+            <div class="spec-number">02</div>
+            <div>
+              <h3>Detalles Universitarios</h3>
+              <p>
+                Equipado con un bolso de cuero marrón cruzado para llevar sus apuntes y un reloj de pulsera en la muñeca izquierda que destaca su apuro por no llegar tarde.
+              </p>
+            </div>
+          </div>
+
+          <div class="spec-item">
+            <div class="spec-number">03</div>
+            <div>
+              <h3>Movimientos y Animaciones</h3>
+              <p>
+                Sus brazos y piernas grandes le permiten realizar con total claridad sus cuatro movimientos principales: <strong>Correr</strong> (su estado constante), <strong>Saltar</strong>, <strong>Agacharse</strong> para pasar bajo obstáculos y su animación de <strong>Caída derrotada</strong>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. MECÁNICAS DE JUEGO (Probador de teclas mejorado) -->
+  <section id="mecanicas" class="section-block bg-alt">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow">03 / CÓMO JUGAR Y REGLAS</span>
+        <h2 class="section-title">Mecánicas y Controles</h2>
+        <p class="section-subtitle">
+          <strong>¡Prueba los controles directamente aquí!</strong> Presiona las teclas Flecha Arriba (↑) o Flecha Abajo (↓) en tu teclado (o haz clic en las tarjetas) para simular el movimiento y escuchar los efectos.
+        </p>
+      </div>
+
+      <div class="controls-interactive-grid">
+        <div class="control-card" id="key-up-card" tabindex="0">
+          <div class="key-cap">↑</div>
+          <div class="control-info">
+            <span class="control-tag">TECLA FLECHA ARRIBA</span>
+            <h3>Salto para Esquivar Obstáculos Bajos</h3>
+            <p>
+              Eleva al Yeti en el aire para superar objetos en el suelo como pilas de libros pesados, mochilas olvidadas y conos de seguridad.
+            </p>
+            <div class="collider-status" id="jump-feedback">Postura: ¡Elevación sobre el suelo! Sutil sonido de impulso.</div>
+          </div>
+        </div>
+
+        <div class="control-card" id="key-down-card" tabindex="0">
+          <div class="key-cap">↓</div>
+          <div class="control-info">
+            <span class="control-tag">TECLA FLECHA ABAJO</span>
+            <h3>Agacharse en Deslizamiento</h3>
+            <p>
+              Adopta una postura encogida para pasar libremente por debajo de los obstáculos altos, como letreros colgantes de señalética y drones de proyectos.
+            </p>
+            <div class="collider-status" id="slide-feedback">Postura: ¡Tamaño reducido para pasar bajo objetos!</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rules-container">
+        <div class="rules-text-box">
+          <h3>Reglas del Juego y Lógica de Partida</h3>
+          <ul class="clean-list">
+            <li>
+              <strong>Desplazamiento Continuo:</strong> El Yeti avanza de forma constante por el campus y la velocidad se incrementa conforme acumulas más puntos.
+            </li>
+            <li>
+              <strong>Aparición Impredecible:</strong> Los obstáculos altos y bajos aparecen a intervalos de tiempo variados para poner a prueba tus reflejos.
+            </li>
+            <li>
+              <strong>Limpieza de Pista:</strong> Cada mochila, libro o cartel superado que queda fuera de la pantalla se borra automáticamente para asegurar el rendimiento.
+            </li>
+            <li>
+              <strong>Puntuación de Victoria:</strong> Consigues puntos por cada segundo de carrera. ¡Llega a los <strong>1000 puntos</strong> para ganar y salvar tu defensa!
+            </li>
+            <li>
+              <strong>Oportunidades de Fuego (Vidas):</strong> Inicias con <strong>3 vidas</strong>. Cada impacto resta una; si el contador llega a cero, el Yeti cae exhausto y se termina el juego.
+            </li>
+          </ul>
+        </div>
+
+        <div class="rules-image-box">
+          <img 
+            src="../../assets/capturas/yetirunner/gameplay-pasillo.png" 
+            alt="Gameplay en el pasillo" 
+            class="zoomable-img"
+          />
+          <span class="img-note">Partida en vivo: Interfaz de vidas y marcador de puntos mientras esquivas letreros en el pasillo.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. DATOS Y MÉTRICAS -->
+  <section id="datos" class="section-block">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-eyebrow">04 / FICHA TÉCNICA Y RENDIMIENTO</span>
+        <h2 class="section-title">Datos y Métricas del Proyecto</h2>
+        <p class="section-subtitle">
+          Detalles de diseño, volumen tridimensional y transiciones de animación configurados para el juego.
+        </p>
+      </div>
+
+      <div class="metrics-grid">
+        <div class="data-card">
+          <div class="data-top">PUNTUACIÓN META</div>
+          <div class="data-value">1000 PTS</div>
+          <h3>Objetivo de Victoria</h3>
+          <p>El puntaje requerido para esquivar el peligro y llegar a la defensa final a tiempo.</p>
+        </div>
+
+        <div class="data-card">
+          <div class="data-top">RECURSO DE SALUD</div>
+          <div class="data-value">3 VIDAS</div>
+          <h3>Tolerancia de Impacto</h3>
+          <p>La cantidad de oportunidades del jugador antes de que la carrera se detenga por completo.</p>
+        </div>
+
+        <div class="data-card">
+          <div class="data-top">MOVIMIENTOS ACTIVOS</div>
+          <div class="data-value">4 ESTADOS</div>
+          <h3>Sistema de Animaciones</h3>
+          <p>Conexión fluida entre las posturas de correr, saltar, agacharse y caer derrotado.</p>
+        </div>
+
+        <div class="data-card">
+          <div class="data-top">PRODUCCIÓN DE ENTORNO</div>
+          <div class="data-value">142,362</div>
+          <h3>Caras del Modelo 3D</h3>
+          <p>Cantidad de detalles geométricos que componen al personaje, optimizado para cargar rápido.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. DESPLIEGUE Y ENTRENADOR DE EXAMEN (INTERACTIVO UX) -->
+  <section id="jugar" class="section-block play-dark-section">
+    <div class="container">
+      <div class="section-header light-header">
+        <span class="section-eyebrow">05 / DESPLIEGUE INTERACTIVO EN LA NUBE</span>
+        <h2 class="section-title">¡Jugar Ahora en el Navegador!</h2>
+        <p class="section-subtitle">
+          Prueba el juego directamente. Te sugerimos activar el <strong>Bloqueador de Pantalla</strong> para que la página no se mueva al usar las flechas.
+        </p>
+      </div>
+
+      <!-- Barra de controles de la pantalla WebGL -->
+      <div class="player-Wrapper">
+        <div class="player-toolbar">
+          <div class="player-status">
+            <span class="status-dot"></span>
+            <span>Instancia: <strong>¡Yeti-enes que correr! (WebGL Build)</strong></span>
+          </div>
+          <div class="player-controls">
+            <button id="btn-lock-keys" class="tool-btn active-Lock" title="Evita que el navegador se desplace con las flechas">
+              🔒 Bloqueador de Pantalla: ACTIVO
+            </button>
+            <button id="btn-theater" class="tool-btn">
+              ↔ Modo Teatro (Ampliar)
+            </button>
+            <button id="btn-fullscreen" class="tool-btn primary-tool">
+              ⛶ Pantalla Completa
+            </button>
+            <a href="./webgl/index.html" target="_blank" class="tool-btn">
+              ↗ Abrir en Nueva Ventana
+            </a>
+          </div>
+        </div>
+
+        <!-- Contenedor del juego Unity WebGL -->
+        <div id="webgl-container" class="webgl-viewport">
+          <iframe 
+            id="unity-iframe" 
+            src="./webgl/index.html" 
+            title="Videojuego WebGL ¡Yeti-enes que correr!" 
+            allowfullscreen
+          ></iframe>
+        </div>
+      </div>
+
+      
+
+      <!-- Requerimientos mínimos y créditos -->
+      <div class="tech-specs-grid">
+        <div class="tech-box">
+          <h4>Requerimientos del Navegador</h4>
+          <p>
+            Funciona en Google Chrome, Microsoft Edge, Mozilla Firefox o Brave con la aceleración gráfica por hardware activada en la configuración del explorador.
+          </p>
+        </div>
+
+        <div class="tech-box">
+          <h4>¿Cómo se Juega?</h4>
+          <p>
+            Haz clic izquierdo dentro del lienzo del juego para darle foco. Presiona <strong>JUGAR</strong> en el menú, y utiliza <strong>↑ para saltar</strong> y <strong>↓ para agacharte</strong>.
+          </p>
+        </div>
+
+        <div class="tech-box">
+          <h4>Autores del Proyecto</h4>
+          <p>
+            Melani Quintela Aguilar &amp; Jose Martin Leaño Mercado.<br />
+            <strong>Universidad del Valle (Univalle)</strong> • Ingeniería de Sistemas, Sábado de Defensa.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PIE DE PÁGINA (Banda guinda-café integrada) -->
+  <footer class="footer">
+    <div class="container footer-flex">
+      <div>
+        <strong>¡Yeti-enes que correr!</strong> — Portal Oficial de Divulgación
+      </div>
+      <div>
+        Portafolio de Proyectos • Melani Quintela Aguilar (2026)
+      </div>
+    </div>
+  </footer>
+
+  <!-- Botones de ayuda al usuario (UX) -->
+  <button id="back-to-top" class="back-to-top" aria-label="Volver arriba">↑</button>
+
+  <!-- modal de visor zoom para imágenes -->
+  <div id="lightbox-modal" class="lightbox-modal">
+    <span class="lightbox-close" id="lightbox-close">&times;</span>
+    <img class="lightbox-content" id="lightbox-img" alt="Vista ampliada" />
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>

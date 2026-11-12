@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>¡Yeti-enes que correr! | Portal Oficial — Carrera por el Campus</title>
-  <!-- Tipografías de alta legibilidad -->
+  <title>Portal de Videojuegos | Melani Quintela Aguilar — Yeti Runner & Laberinto 3D</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
@@ -12,25 +11,19 @@
 </head>
 <body>
 
-  <!-- Barra de progreso de lectura (UX) -->
+  <!-- Barra superior de progreso de lectura -->
   <div class="scroll-progress" id="scroll-progress"></div>
 
-  <!-- 1. ENCABEZADO DE NAVEGACIÓN FIJO (Barra guinda mejorada) -->
+  <!-- 1. ENCABEZADO DE NAVEGACIÓN FIJO + IDENTIDAD DEL DEVELOPER -->
   <header class="navbar" id="navbar">
     <div class="nav-wrapper">
       <a href="#inicio" class="brand">
-        <!-- Reemplazo de la Y por la imagen de la mascota generada -->
         <img src="../../assets/capturas/yetirunner/logo-yeti.png" alt="Insignia Yeti" class="brand-logo-img" />
         <div class="brand-info">
-          <span class="brand-name">¡YETI-ENES QUE CORRER!</span>
-          <span class="brand-tag">CAMPUS RUNNER 3D</span>
+          <span class="brand-name-black">MELANI QUINTELA AGUILAR</span>
+          <span class="brand-tag">DEVELOPER PORTAL • 2 JUEGOS</span>
         </div>
       </a>
-
-      <!-- Botón de sonido interactivo en la barra (UX) -->
-      <button class="sound-toggle-btn" id="sound-toggle-btn" title="Activar/Desactivar efectos del portal">
-        🔊 Sonido: ON
-      </button>
 
       <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Abrir menú">
         ☰
@@ -41,18 +34,19 @@
         <a href="#personaje" class="nav-item">Personaje</a>
         <a href="#mecanicas" class="nav-item">Mecánicas</a>
         <a href="#datos" class="nav-item">Datos</a>
-        <a href="#jugar" class="nav-btn-cta"> JUGAR AHORA</a>
+        <a href="#juego-1" class="nav-btn-cta">🎮 JUEGO 1: RUNNER</a>
+        <a href="#juego-2" class="nav-btn-cta nav-btn-game2">🕹️ JUEGO 2: LABERINTO</a>
       </nav>
     </div>
   </header>
 
-  <!-- 2. SECCIÓN PRINCIPAL (HERO FULL-SCREEN) -->
+  <!-- 2. SECCIÓN PRINCIPAL (HERO) -->
   <section id="inicio" class="hero-section">
     <div class="container hero-grid">
       <div class="hero-content">
         <div class="tech-pill">
           <span class="pulse-dot"></span>
-          CARRERA INFINITA 3D / NAVEGADOR WEB
+          PORTAL INTERACTIVO 3D / 2 JUEGOS EN UNITY WEBGL
         </div>
 
         <h1 class="hero-title">
@@ -61,32 +55,39 @@
         </h1>
 
         <p class="hero-lead">
-          ¡Evita los obstáculos del campus y llega a tiempo a tu examen final!
+          ¡Supera la carrera infinita por el pasillo y el modo extra de laberinto estilo Pac-Man!
         </p>
 
         <p class="hero-text">
-          Te quedaste dormido antes de la defensa final en vivo y solo tienes unos minutos. Recorre a toda velocidad los pasillos y patios de la universidad, esquiva mochilas, libros y letreros colgantes con <strong>tres vidas disponibles y una sola misión: alcanzar los 1000 puntos</strong>.
+          Bienvenido al portal oficial desarrollado por <strong>Melani Quintela Aguilar</strong>. Disfruta de la experiencia principal de carrera continua ayudando al Yeti Estudiante a llegar a su defensa con <strong>1000 puntos</strong>, o pon a prueba tus reflejos en el <strong>Juego 2 (Modo Extra de Laberinto 3D)</strong> recolectando los <strong>36 objetos (360 puntos)</strong> sin que te atrapen los docentes.
         </p>
 
-        <div class="hero-cta-group">
-          <a href="#jugar" class="btn-primary">▶ JUGAR AHORA</a>
-          <a href="#historia" class="btn-outline">VER HISTORIA →</a>
+        <!-- MENÚ DE SELECCIÓN DE JUEGOS (GED 26) -->
+        <div class="game-selector-panel">
+          <div class="selector-header">
+            <span class="selector-dev">👤 Developer: <strong>Melani Quintela Aguilar</strong></span>
+            <span class="selector-badge">SELECCIÓN DE JUEGO</span>
+          </div>
+          <div class="hero-cta-group">
+            <a href="#juego-1" class="btn-select-game1">🎮 ENLACE JUEGO 1: YETI RUNNER</a>
+            <a href="#juego-2" class="btn-select-game2">🕹️ ENLACE JUEGO 2: LABERINTO PAC-MAN</a>
+            <a href="#mecanicas" class="btn-outline">VER CONTROLES →</a>
+          </div>
         </div>
 
-        <!-- Panel de métricas rápidas -->
+        <!-- Panel de métricas rápidas de ambos juegos -->
         <div class="hero-metrics">
           <div class="quick-stat">
-            <span class="stat-val" id="hero-score-counter">0 / 1000</span>
-            <span class="stat-lbl">Simulador de Puntos</span>
-            <button class="btn-mini-action" id="btn-simulate-points" style="margin-top: 5px;">⚡ Sumar +100</button>
+            <span class="stat-val">1000 PTS</span>
+            <span class="stat-lbl">Meta Juego 1 (3 Vidas)</span>
           </div>
           <div class="quick-stat">
-            <span class="stat-val">3 VIDAS</span>
-            <span class="stat-lbl">Oportunidades</span>
+            <span class="stat-val">360 PTS</span>
+            <span class="stat-lbl">Meta Juego 2 (36 Objetos)</span>
           </div>
           <div class="quick-stat">
-            <span class="stat-val">Teclas ↑ / ↓</span>
-            <span class="stat-lbl">Salto y Agache</span>
+            <span class="stat-val">Flechas + R</span>
+            <span class="stat-lbl">Controles de Teclado</span>
           </div>
         </div>
       </div>
@@ -94,27 +95,29 @@
       <!-- Elemento gráfico principal -->
       <div class="hero-showcase">
         <div class="showcase-card">
+          <div class="showcase-status">● 2 JUEGOS DISPONIBLES</div>
           <img 
             src="../../assets/capturas/yetirunner/yeti-portada.png" 
             alt="Personaje 3D El Yeti Estudiante" 
             class="zoomable-img"
           />
           <div class="showcase-footer">
-            <span>Mascota: <strong>El Yeti Estudiante</strong></span>
+            <span>Protagonista 3D: <strong>El Yeti Estudiante</strong></span>
+            <span class="zoom-hint">🔍 Clic para ampliar</span>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 3. HISTORIA -->
+  <!-- 3. HISTORIA (Contexto del Juego Principal) -->
   <section id="historia" class="section-block bg-alt">
     <div class="container">
       <div class="section-header">
-        <span class="section-eyebrow">01 / UNIVERSO NARRATIVO</span>
+        <span class="section-eyebrow">01 / UNIVERSO NARRATIVO (JUEGO PRINCIPAL)</span>
         <h2 class="section-title">Historia y Contexto del Campus</h2>
         <p class="section-subtitle">
-          Una carrera emocionante por los pasillos interiores, jardines y laboratorios de la universidad donde el tiempo corre en contra.
+          El trasfondo narrativo que da origen a la aventura del Yeti Estudiante en los pasillos, jardines y aulas de la universidad.
         </p>
       </div>
 
@@ -123,7 +126,7 @@
           <div class="card-badge">CONTEXTO NARRATIVO</div>
           <h3>El Campus y la Problemática Inicial</h3>
           <p>
-            El juego se desarrolla en el campus de la universidad, recorriendo los pasillos de piso cerámico, dispensadores de agua, vistas hacia los jardines y puertas de laboratorios.
+            La ambientación recrea el campus universitario con sus pasillos interiores de piso cerámico, dispensadores de agua, jardines con estructuras geométricas y puertas de aulas y laboratorios.
           </p>
           <p>
             Al principio, el Yeti Universitario camina tranquilo con su chamarra guinda y su bolso cruzado, confiado de que tiene tiempo de sobra. Sin embargo, al mirar su reloj de pulsera en el patio, entra en pánico: <strong>faltan muy pocos minutos para que se cierre el laboratorio de desarrollo</strong>.
@@ -134,10 +137,10 @@
           <div class="card-badge">ARCO ARGUMENTAL</div>
           <h3>La Carrera por el Éxito</h3>
           <p>
-            Para llegar a la defensa final y no perder la materia, el Yeti debe emprender una veloz carrera continua esquivando todos los objetos cotidianos olvidados en el camino.
+            Para llegar a la defensa final y aprobar la asignatura, el Yeti emprende una veloz carrera continua esquivando todos los objetos cotidianos olvidados por otros estudiantes en el camino.
           </p>
           <p>
-            El juego construye una <strong>secuencia única en tiempo real</strong>: cada partida genera un camino aleatorio de obstáculos que exige reflejos rápidos para conseguir la victoria (llegar al Aula 101) o enfrentar la derrota tras tropezar y agotar tus vidas.
+            La partida construye una <strong>secuencia única en tiempo real</strong>: los obstáculos aparecen de forma aleatoria exigiendo reflejos rápidos para conseguir la victoria (llegar al Aula 101) o enfrentar la derrota tras tropezar y agotar sus vidas.
           </p>
         </article>
       </div>
@@ -168,14 +171,14 @@
     </div>
   </section>
 
-  <!-- 4. PERSONAJE -->
+  <!-- 4. PERSONAJE Y ELEMENTOS 3D (Abarca ambos juegos) -->
   <section id="personaje" class="section-block">
     <div class="container">
       <div class="section-header">
-        <span class="section-eyebrow">02 / NUESTRA MASCOTA</span>
-        <h2 class="section-title">El Yeti Estudiante</h2>
+        <span class="section-eyebrow">02 / PROTAGONISTA Y MODELOS 3D</span>
+        <h2 class="section-title">El Yeti Estudiante en Ambos Juegos</h2>
         <p class="section-subtitle">
-          Un diseño propio y colorido, cargado de detalles divertidos para ofrecer un gran contraste durante la carrera.
+          El mismo modelo 3D original y la estética universitaria protagonizan tanto la carrera infinita como el desafío extra del laberinto.
         </p>
       </div>
 
@@ -192,9 +195,9 @@
           <div class="spec-item">
             <div class="spec-number">01</div>
             <div>
-              <h3>Chamarra Universitaria y Pelaje</h3>
+              <h3>Identidad Visual y Vestimenta Universitaria</h3>
               <p>
-                Un Yeti amigable de pelaje blanco texturizado que viste la tradicional chamarra universitaria en color guinda y gris con botones frontales, haciéndolo visible al instante en cualquier pasillo.
+                Personaje de pelaje blanco texturizado que viste la tradicional chamarra universitaria en tonos guinda y gris con botones frontales, bolso de cuero cruzado y reloj de pulsera, destacando con claridad sobre el piso del campus.
               </p>
             </div>
           </div>
@@ -202,9 +205,9 @@
           <div class="spec-item">
             <div class="spec-number">02</div>
             <div>
-              <h3>Detalles Universitarios</h3>
+              <h3>Animaciones en Juego 1 (Runner) y Juego 2 (Laberinto)</h3>
               <p>
-                Equipado con un bolso de cuero marrón cruzado para llevar sus apuntes y un reloj de pulsera en la muñeca izquierda que destaca su apuro por no llegar tarde.
+                En el <strong>Juego 1</strong> ejecuta los estados de <em>Correr, Saltar, Agacharse y Morir</em>. En el <strong>Juego 2 (Laberinto)</strong> alterna entre <em>Quieto</em> (al detenerse), <em>Correr</em> (avanzando y girando en las 4 direcciones) y <em>Morir</em> (al ser alcanzado por un enemigo).
               </p>
             </div>
           </div>
@@ -212,9 +215,9 @@
           <div class="spec-item">
             <div class="spec-number">03</div>
             <div>
-              <h3>Movimientos y Animaciones</h3>
+              <h3>Docentes Enemigos en el Modo Laberinto (Juego 2)</h3>
               <p>
-                Sus brazos y piernas grandes le permiten realizar con total claridad sus cuatro movimientos principales: <strong>Correr</strong> (su estado constante), <strong>Saltar</strong>, <strong>Agacharse</strong> para pasar bajo obstáculos y su animación de <strong>Caída derrotada</strong>.
+                En el segundo juego se integran <strong>2 docentes enemigos (E1 y E2)</strong> que patrullan pasillos fijos de 4 esquinas esquivando paredes y persiguen al Yeti cuando lo detectan en línea recta a 8 unidades o menos.
               </p>
             </div>
           </div>
@@ -223,210 +226,297 @@
     </div>
   </section>
 
-  <!-- 5. MECÁNICAS DE JUEGO (Probador de teclas mejorado) -->
+  <!-- 5. MECÁNICAS Y CONTROLES (Adaptado a Juego 1 y Juego 2) -->
   <section id="mecanicas" class="section-block bg-alt">
     <div class="container">
       <div class="section-header">
-        <span class="section-eyebrow">03 / CÓMO JUGAR Y REGLAS</span>
-        <h2 class="section-title">Mecánicas y Controles</h2>
+        <span class="section-eyebrow">03 / ESQUEMA DE CONTROL Y REGLAS</span>
+        <h2 class="section-title">Mecánicas y Controles: Juego 1 y Juego 2</h2>
         <p class="section-subtitle">
-          <strong>¡Prueba los controles directamente aquí!</strong> Presiona las teclas Flecha Arriba (↑) o Flecha Abajo (↓) en tu teclado (o haz clic en las tarjetas) para simular el movimiento y escuchar los efectos.
+          Presiona las teclas de dirección (<strong>↑ ↓ ← →</strong>) o la tecla <strong>R</strong> en tu teclado (o haz clic en las tarjetas) para probar el esquema de controles de ambos videojuegos.
         </p>
       </div>
 
-      <div class="controls-interactive-grid">
+      <!-- Probador de controles para ambos juegos -->
+      <div class="controls-interactive-grid three-cols">
         <div class="control-card" id="key-up-card" tabindex="0">
-          <div class="key-cap">↑</div>
+          <div class="key-cap">↑ / ↓</div>
           <div class="control-info">
-            <span class="control-tag">TECLA FLECHA ARRIBA</span>
-            <h3>Salto para Esquivar Obstáculos Bajos</h3>
+            <span class="control-tag">JUEGO 1 Y JUEGO 2</span>
+            <h3>Flechas Arriba y Abajo</h3>
             <p>
-              Eleva al Yeti en el aire para superar objetos en el suelo como pilas de libros pesados, mochilas olvidadas y conos de seguridad.
+              • <strong>Juego 1 (Runner):</strong> <strong>↑</strong> salta mochilas y libros; <strong>↓</strong> se agacha bajo los letreros colgantes.<br />
+              • <strong>Juego 2 (Laberinto):</strong> Desplaza al Yeti hacia arriba o abajo por los pasillos (velocidad 3 u/s).
             </p>
-            <div class="collider-status" id="jump-feedback">Postura: ¡Elevación sobre el suelo! Sutil sonido de impulso.</div>
+            <div class="collider-status" id="updown-feedback">Estado: Listo para probar teclas ↑ y ↓</div>
           </div>
         </div>
 
-        <div class="control-card" id="key-down-card" tabindex="0">
-          <div class="key-cap">↓</div>
+        <div class="control-card" id="key-lr-card" tabindex="0">
+          <div class="key-cap">← / →</div>
           <div class="control-info">
-            <span class="control-tag">TECLA FLECHA ABAJO</span>
-            <h3>Agacharse en Deslizamiento</h3>
+            <span class="control-tag">EXCLUSIVO JUEGO 2 (LABERINTO)</span>
+            <h3>Flechas Izquierda y Derecha</h3>
             <p>
-              Adopta una postura encogida para pasar libremente por debajo de los obstáculos altos, como letreros colgantes de señalética y drones de proyectos.
+              Permiten girar en las esquinas del laberinto de 11 × 9 celdas y avanzar horizontalmente en una dirección a la vez sin atravesar paredes.
             </p>
-            <div class="collider-status" id="slide-feedback">Postura: ¡Tamaño reducido para pasar bajo objetos!</div>
+            <div class="collider-status" id="lr-feedback">Estado: Listo para probar teclas ← y →</div>
+          </div>
+        </div>
+
+        <div class="control-card" id="key-r-card" tabindex="0">
+          <div class="key-cap">R</div>
+          <div class="control-info">
+            <span class="control-tag">REINICIO RÁPIDO (JUEGO 2)</span>
+            <h3>Tecla R: Reiniciar Partida</h3>
+            <p>
+              En el modo Laberinto, presionar la tecla <strong>R</strong> en cualquier momento reinicia de inmediato la partida, restaurando los 36 objetos y las posiciones iniciales.
+            </p>
+            <div class="collider-status" id="r-feedback">Estado: Presiona la tecla R para probar</div>
           </div>
         </div>
       </div>
 
-      <div class="rules-container">
-        <div class="rules-text-box">
-          <h3>Reglas del Juego y Lógica de Partida</h3>
+      <!-- Comparativa clara de reglas: Juego 1 vs Juego 2 -->
+      <div class="dual-rules-grid">
+        <div class="surface-card">
+          <div class="card-badge">REGLAS JUEGO 1 • CARRERA INFINITA</div>
+          <h3>¡Yeti-enes que correr! (Runner 3D)</h3>
           <ul class="clean-list">
-            <li>
-              <strong>Desplazamiento Continuo:</strong> El Yeti avanza de forma constante por el campus y la velocidad se incrementa conforme acumulas más puntos.
-            </li>
-            <li>
-              <strong>Aparición Impredecible:</strong> Los obstáculos altos y bajos aparecen a intervalos de tiempo variados para poner a prueba tus reflejos.
-            </li>
-            <li>
-              <strong>Limpieza de Pista:</strong> Cada mochila, libro o cartel superado que queda fuera de la pantalla se borra automáticamente para asegurar el rendimiento.
-            </li>
-            <li>
-              <strong>Puntuación de Victoria:</strong> Consigues puntos por cada segundo de carrera. ¡Llega a los <strong>1000 puntos</strong> para ganar y salvar tu defensa!
-            </li>
-            <li>
-              <strong>Oportunidades de Fuego (Vidas):</strong> Inicias con <strong>3 vidas</strong>. Cada impacto resta una; si el contador llega a cero, el Yeti cae exhausto y se termina el juego.
-            </li>
+            <li><strong>Perspectiva y avance:</strong> Vista lateral en 3D con desplazamiento continuo hacia adelante por el pasillo.</li>
+            <li><strong>Obstáculos aleatorios:</strong> Aparición impredecible de obstáculos bajos (mochilas y libros) y altos (carteles de "AGÁCHATE") que se eliminan al quedar atrás.</li>
+            <li><strong>Sistema de 3 Vidas:</strong> Cada choque resta 1 vida. Si el contador llega a 0, el Yeti cae y termina la partida.</li>
+            <li><strong>Condición de Victoria:</strong> Sobrevivir hasta acumular <strong>1000 puntos</strong>.</li>
           </ul>
         </div>
 
+        <div class="surface-card">
+          <div class="card-badge badge-green">REGLAS JUEGO 2 • MODO EXTRA PAC-MAN 3D</div>
+          <h3>Laberinto Universitario (11 × 9 Celdas)</h3>
+          <ul class="clean-list">
+            <li><strong>Recolección y Salida (F1):</strong> El Yeti inicia en la celda <strong>F8</strong> y debe recoger los <strong>36 objetos</strong> (10 pts c/u = <strong>360 puntos</strong>) para abrir la puerta de salida en <strong>F1</strong>.</li>
+            <li><strong>Rutas de Patrulla:</strong> 2 docentes enemigos inician en <strong>E5</strong> y <strong>G5</strong> recorriendo 4 esquinas fijas a velocidad <code>2.5 u/s</code> sin atravesar paredes.</li>
+            <li><strong>Detección y Persecución:</strong> Si un enemigo ve al Yeti en línea recta a <strong>8 unidades o menos</strong>, lo persigue a velocidad <code>3.5 u/s</code>. Si una pared bloquea la vista, vuelve a su ruta.</li>
+            <li><strong>Derrota instantánea:</strong> No hay vidas; si un enemigo toca al Yeti, la partida termina de inmediato.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Captura ilustrativa -->
+      <div class="rules-container" style="margin-top: 2rem;">
+        <div class="rules-text-box">
+          <h3>Coherencia Visual en el Campus</h3>
+          <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+            Ambos videojuegos comparten el mismo universo gráfico: pisos cerámicos del pasillo universitario, muros guindas institucionales, mochilas y pilas de libros como elementos interactivos, e interfaz de usuario unificada con marcadores en tiempo real.
+          </p>
+        </div>
         <div class="rules-image-box">
           <img 
             src="../../assets/capturas/yetirunner/gameplay-pasillo.png" 
             alt="Gameplay en el pasillo" 
             class="zoomable-img"
           />
-          <span class="img-note">Partida en vivo: Interfaz de vidas y marcador de puntos mientras esquivas letreros en el pasillo.</span>
+          <span class="img-note">Estética universitaria aplicada en las escenas del proyecto en Unity 3D.</span>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 6. DATOS Y MÉTRICAS -->
+  <!-- 6. DATOS Y MÉTRICAS (De ambos juegos) -->
   <section id="datos" class="section-block">
     <div class="container">
       <div class="section-header">
-        <span class="section-eyebrow">04 / FICHA TÉCNICA Y RENDIMIENTO</span>
-        <h2 class="section-title">Datos y Métricas del Proyecto</h2>
+        <span class="section-eyebrow">04 / FICHA TÉCNICA Y MÉTRICAS</span>
+        <h2 class="section-title">Datos de Diseño: Juego 1 y Juego 2</h2>
         <p class="section-subtitle">
-          Detalles de diseño, volumen tridimensional y transiciones de animación configurados para el juego.
+          Indicadores numéricos y parámetros configurados en Unity para las dos experiencias integradas en el portal.
         </p>
       </div>
 
       <div class="metrics-grid">
         <div class="data-card">
-          <div class="data-top">PUNTUACIÓN META</div>
+          <div class="data-top">JUEGO 1 • RUNNER</div>
           <div class="data-value">1000 PTS</div>
-          <h3>Objetivo de Victoria</h3>
-          <p>El puntaje requerido para esquivar el peligro y llegar a la defensa final a tiempo.</p>
+          <h3>Meta y 3 Vidas</h3>
+          <p>Puntaje por tiempo de supervivencia con 3 oportunidades de impacto en el corredor.</p>
         </div>
 
         <div class="data-card">
-          <div class="data-top">RECURSO DE SALUD</div>
-          <div class="data-value">3 VIDAS</div>
-          <h3>Tolerancia de Impacto</h3>
-          <p>La cantidad de oportunidades del jugador antes de que la carrera se detenga por completo.</p>
+          <div class="data-top">JUEGO 2 • LABERINTO</div>
+          <div class="data-value">360 PTS</div>
+          <h3>36 Objetos en Pista</h3>
+          <p>Cada objeto suma 10 puntos. Al recoger los 36 se abre la puerta de salida en la celda F1.</p>
         </div>
 
         <div class="data-card">
-          <div class="data-top">MOVIMIENTOS ACTIVOS</div>
-          <div class="data-value">4 ESTADOS</div>
-          <h3>Sistema de Animaciones</h3>
-          <p>Conexión fluida entre las posturas de correr, saltar, agacharse y caer derrotado.</p>
+          <div class="data-top">MAPA E INTELIGENCIA</div>
+          <div class="data-value">11 × 9</div>
+          <h3>Celdas y Visión a 8u</h3>
+          <p>Cuadrícula de 2×2 unidades por celda con 2 enemigos que detectan al jugador a 8 unidades.</p>
         </div>
 
         <div class="data-card">
-          <div class="data-top">PRODUCCIÓN DE ENTORNO</div>
+          <div class="data-top">MODELADO 3D PROPIO</div>
           <div class="data-value">142,362</div>
-          <h3>Caras del Modelo 3D</h3>
-          <p>Cantidad de detalles geométricos que componen al personaje, optimizado para cargar rápido.</p>
+          <h3>Caras del Personaje</h3>
+          <p>Malla 3D con 78,770 vértices y máquina de estados de animación para ambos juegos.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 7. DESPLIEGUE Y ENTRENADOR DE EXAMEN (INTERACTIVO UX) -->
+  <!-- 7. SECCIÓN DE EJECUCIÓN DE AMBOS JUEGOS (CON CONTENEDOR Y FONDO OSCURO CORRECTOS) -->
   <section id="jugar" class="section-block play-dark-section">
     <div class="container">
-      <div class="section-header light-header">
-        <span class="section-eyebrow">05 / DESPLIEGUE INTERACTIVO EN LA NUBE</span>
-        <h2 class="section-title">¡Jugar Ahora en el Navegador!</h2>
-        <p class="section-subtitle">
-          Prueba el juego directamente. Te sugerimos activar el <strong>Bloqueador de Pantalla</strong> para que la página no se mueva al usar las flechas.
-        </p>
-      </div>
 
-      <!-- Barra de controles de la pantalla WebGL -->
-      <div class="player-Wrapper">
-        <div class="player-toolbar">
-          <div class="player-status">
-            <span class="status-dot"></span>
-            <span>Instancia: <strong>¡Yeti-enes que correr! (WebGL Build)</strong></span>
-          </div>
-          <div class="player-controls">
-            <button id="btn-lock-keys" class="tool-btn active-Lock" title="Evita que el navegador se desplace con las flechas">
-              🔒 Bloqueador de Pantalla: ACTIVO
-            </button>
-            <button id="btn-theater" class="tool-btn">
-              ↔ Modo Teatro (Ampliar)
-            </button>
-            <button id="btn-fullscreen" class="tool-btn primary-tool">
-              ⛶ Pantalla Completa
-            </button>
-            <a href="./webgl/index.html" target="_blank" class="tool-btn">
-              ↗ Abrir en Nueva Ventana
-            </a>
-          </div>
+      <!-- ==================== SECCIÓN JUEGO 1 ==================== -->
+      <div id="juego-1" class="game-anchor-block">
+        <div class="section-header light-header">
+          <span class="section-eyebrow">05.A / SECCIÓN JUEGO 1 — ENDLESS RUNNER 3D</span>
+          <h2 class="section-title">Sección Juego 1: ¡Yeti-enes que correr!</h2>
+          <p class="section-subtitle">
+            El juego permanece en espera hasta que decidas iniciarlo. Presiona el botón azul <strong>START</strong> ubicado encima del área de juego para ejecutarlo en esta misma página.
+          </p>
         </div>
 
-        <!-- Contenedor del juego Unity WebGL -->
-        <div id="webgl-container" class="webgl-viewport">
-          <iframe 
-            id="unity-iframe" 
-            src="./webgl/index.html" 
-            title="Videojuego WebGL ¡Yeti-enes que correr!" 
-            allowfullscreen
-          ></iframe>
+        <div class="player-Wrapper">
+          <div class="player-toolbar">
+            <div class="player-status">
+              <span class="status-dot" id="status-dot-1"></span>
+              <span id="status-text-1">Estado Juego 1: <strong>En espera de START</strong></span>
+            </div>
+            <div class="player-controls">
+              <button id="btn-start-game1" class="btn-start-official">
+                ▶ START (INICIAR JUEGO 1)
+              </button>
+              <button id="btn-lock-keys" class="tool-btn active-Lock" title="Evita que el navegador se desplace con las flechas">
+                🔒 Bloqueador de Flechas: ACTIVO
+              </button>
+              <button id="btn-theater" class="tool-btn">
+                ↔ Modo Teatro
+              </button>
+              <button id="btn-fullscreen" class="tool-btn primary-tool">
+                ⛶ Pantalla Completa
+              </button>
+            </div>
+          </div>
+
+          <div id="webgl-container" class="webgl-viewport">
+            <div id="standby-overlay-1" class="standby-overlay">
+              <div class="standby-box">
+                <span class="standby-tag">SECCIÓN JUEGO 1 • CARRERA INFINITA</span>
+                <h3>¡Yeti-enes que correr!</h3>
+                <p>
+                  Haz clic en el botón azul <strong>START (INICIAR JUEGO 1)</strong> ubicado justo arriba para cargar y jugar aquí mismo sin abrir otra pestaña.
+                </p>
+              </div>
+            </div>
+            <iframe 
+              id="unity-iframe-1" 
+              src="about:blank" 
+              data-src="./webgl/index.html"
+              title="Sección Juego 1: ¡Yeti-enes que correr!" 
+              allowfullscreen
+            ></iframe>
+          </div>
         </div>
       </div>
 
-      
+      <!-- ==================== SECCIÓN JUEGO 2 ==================== -->
+      <div id="juego-2" class="game-anchor-block" style="margin-top: 4.5rem;">
+        <div class="section-header light-header">
+          <span class="section-eyebrow">05.B / SECCIÓN JUEGO 2 — MODO EXTRA LABERINTO 3D (ESTILO PAC-MAN)</span>
+          <h2 class="section-title">Sección Juego 2: Laberinto Universitario</h2>
+          <p class="section-subtitle">
+            Inicia en la celda <strong>F8</strong>, recoge los <strong>36 objetos (360 puntos)</strong> para abrir la puerta en <strong>F1</strong> y escapa de los <strong>2 docentes</strong>. Presiona su botón <strong>START</strong> encima del área de juego para comenzar.
+          </p>
+        </div>
 
-      <!-- Requerimientos mínimos y créditos -->
+        <div class="player-Wrapper">
+          <div class="player-toolbar">
+            <div class="player-status">
+              <span class="status-dot" id="status-dot-2"></span>
+              <span id="status-text-2">Estado Juego 2: <strong>En espera de START</strong></span>
+            </div>
+            <div class="player-controls">
+              <button id="btn-start-game2" class="btn-start-official">
+                ▶ START (INICIAR JUEGO 2)
+              </button>
+              <button id="btn-theater-2" class="tool-btn">
+                ↔ Modo Teatro
+              </button>
+              <button id="btn-fullscreen-2" class="tool-btn primary-tool">
+                ⛶ Pantalla Completa
+              </button>
+            </div>
+          </div>
+
+          <div id="webgl-container-2" class="webgl-viewport">
+            <div id="standby-overlay-2" class="standby-overlay">
+              <div class="standby-box">
+                <span class="standby-tag">SECCIÓN JUEGO 2 • PAC-MAN 3D</span>
+                <h3>Laberinto Universitario (360 Puntos)</h3>
+                <p>
+                  El videojuego permanece en espera. Haz clic en el botón azul <strong>START (INICIAR JUEGO 2)</strong> ubicado arriba para jugar en esta misma sección sin abrir pestañas externas.
+                </p>
+              </div>
+            </div>
+            <iframe 
+              id="unity-iframe-2" 
+              src="about:blank" 
+              data-src="./webgl-laberinto/index.html"
+              title="Sección Juego 2: Laberinto Estilo Pac-Man" 
+              allowfullscreen
+            ></iframe>
+          </div>
+        </div>
+      </div>
+
+      <!-- Requerimientos mínimos y resumen técnico de ejecución -->
       <div class="tech-specs-grid">
         <div class="tech-box">
           <h4>Requerimientos del Navegador</h4>
           <p>
-            Funciona en Google Chrome, Microsoft Edge, Mozilla Firefox o Brave con la aceleración gráfica por hardware activada en la configuración del explorador.
+            Compatible con Google Chrome, Microsoft Edge, Mozilla Firefox o Brave con soporte WebGL 2.0 y aceleración gráfica por hardware activada. Ambos juegos se ejecutan dentro de esta misma página.
           </p>
         </div>
 
         <div class="tech-box">
-          <h4>¿Cómo se Juega?</h4>
+          <h4>Resumen de Controles</h4>
           <p>
-            Haz clic izquierdo dentro del lienzo del juego para darle foco. Presiona <strong>JUGAR</strong> en el menú, y utiliza <strong>↑ para saltar</strong> y <strong>↓ para agacharte</strong>.
+            • <strong>Juego 1 (Runner):</strong> Flecha Arriba (<strong>↑</strong>) saltar y Flecha Abajo (<strong>↓</strong>) agacharse.<br />
+            • <strong>Juego 2 (Laberinto):</strong> Las 4 Flechas (<strong>↑ ↓ ← →</strong>) para moverse por los pasillos y tecla <strong>R</strong> para reiniciar.
           </p>
         </div>
 
         <div class="tech-box">
-          <h4>Autores del Proyecto</h4>
+          <h4>Developer y Créditos</h4>
           <p>
-            Melani Quintela Aguilar &amp; Jose Martin Leaño Mercado.<br />
-            <strong>Universidad del Valle (Univalle)</strong> • Ingeniería de Sistemas, Sábado de Defensa.
+            Portal actualizado por <strong>Melani Quintela Aguilar</strong>.<br />
+            Proyectos desarrollados en Unity 3D junto a Jose Martin Leaño Mercado • Ingeniería de Sistemas, Univalle.
           </p>
         </div>
       </div>
+
     </div>
   </section>
 
-  <!-- PIE DE PÁGINA (Banda guinda-café integrada) -->
+  <!-- PIE DE PÁGINA -->
   <footer class="footer">
     <div class="container footer-flex">
       <div>
-        <strong>¡Yeti-enes que correr!</strong> — Portal Oficial de Divulgación
+        <strong>Portal Oficial de Videojuegos</strong> — Yeti Runner &amp; Laberinto 3D
       </div>
       <div>
-        Portafolio de Proyectos • Melani Quintela Aguilar (2026)
+        Developer: <strong>Melani Quintela Aguilar</strong> (2026)
       </div>
     </div>
   </footer>
 
-  <!-- Botones de ayuda al usuario (UX) -->
+  <!-- Botón flotante para volver arriba -->
   <button id="back-to-top" class="back-to-top" aria-label="Volver arriba">↑</button>
 
-  <!-- modal de visor zoom para imágenes -->
+  <!-- Visor zoom para imágenes -->
   <div id="lightbox-modal" class="lightbox-modal">
     <span class="lightbox-close" id="lightbox-close">&times;</span>
     <img class="lightbox-content" id="lightbox-img" alt="Vista ampliada" />

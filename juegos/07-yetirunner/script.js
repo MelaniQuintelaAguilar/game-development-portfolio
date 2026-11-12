@@ -7,12 +7,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const mobileMenuBtn = document.getElementById("mobile-menu-btn");
   const navMenu = document.getElementById("nav-menu");
 
-  // 1. Barra de progreso, Navbar fijo y Detector de secciones
+  // 1. Barra de progreso superior, menú fijo y detector de sección activa
   window.addEventListener("scroll", () => {
     const scrollTop = window.scrollY;
     const docHeight = document.documentElement.scrollHeight - window.innerHeight;
     const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-    scrollProgress.style.width = `${progress}%`;
+    if (scrollProgress) {
+      scrollProgress.style.width = `${progress}%`;
+    }
 
     if (scrollTop > 40) {
       navbar.classList.add("scrolled");
@@ -42,123 +44,86 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  backToTopBtn.addEventListener("click", () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  });
+  if (backToTopBtn) {
+    backToTopBtn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
 
-  if (mobileMenuBtn) {
+  if (mobileMenuBtn && navMenu) {
     mobileMenuBtn.addEventListener("click", () => {
       navMenu.classList.toggle("open");
     });
   }
 
-  // 2. Control de Audio Virtual en el portal (Filtro por toggle)
-  let portalSoundEnabled = true;
-  const soundToggleBtn = document.getElementById("sound-toggle-btn");
-
-  if (soundToggleBtn) {
-    soundToggleBtn.addEventListener("click", () => {
-      portalSoundEnabled = !portalSoundEnabled;
-      if (portalSoundEnabled) {
-        soundToggleBtn.textContent = "🔊 Sonido: ON";
-        soundToggleBtn.classList.remove("sound-muted");
-      } else {
-        soundToggleBtn.textContent = "🔇 Sonido: OFF";
-        soundToggleBtn.classList.add("sound-muted");
-      }
-    });
-  }
-
-  // Reproductor de audio Web sintetizado para no depender de archivos externos
-  function playSynthSound(freq, duration, type = "triangle") {
-    if (!portalSoundEnabled) return;
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = type;
-      osc.frequency.setValueAtTime(freq, ctx.currentTime);
-      if (type === "triangle") { // Salto (Frecuencia ascendente)
-        osc.frequency.exponentialRampToValueAtTime(freq * 1.8, ctx.currentTime + duration);
-      } else { // Agacharse (Frecuencia descendente)
-        osc.frequency.exponentialRampToValueAtTime(freq * 0.5, ctx.currentTime + duration);
-      }
-      gain.gain.setValueAtTime(0.15, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + duration);
-    } catch (e) {
-      // AudioContext bloqueado o no soportado
-    }
-  }
-
-  // 3. Simulador interactivo de controles (↑ / ↓)
+  // 2. Probador interactivo de controles para ambos juegos (↑/↓, ←/→ y tecla R) + Bloqueo de Scroll
   const keyUpCard = document.getElementById("key-up-card");
-  const keyDownCard = document.getElementById("key-down-card");
+  const keyLrCard = document.getElementById("key-lr-card");
+  const keyRCard = document.getElementById("key-r-card");
+  const updownFeedback = document.getElementById("updown-feedback");
+  const lrFeedback = document.getElementById("lr-feedback");
+  const rFeedback = document.getElementById("r-feedback");
   const lockKeysBtn = document.getElementById("btn-lock-keys");
-  const jumpFeedback = document.getElementById("jump-feedback");
-  const slideFeedback = document.getElementById("slide-feedback");
   let lockArrowScroll = true;
 
   if (lockKeysBtn) {
     lockKeysBtn.addEventListener("click", () => {
       lockArrowScroll = !lockArrowScroll;
       if (lockArrowScroll) {
-        lockKeysBtn.textContent = "🔒 Bloqueador de Pantalla: ACTIVO";
+        lockKeysBtn.textContent = "🔒 Bloqueador de Flechas: ACTIVO";
         lockKeysBtn.classList.add("active-Lock");
       } else {
-        lockKeysBtn.textContent = "🔓 Bloqueador de Pantalla: INACTIVO";
+        lockKeysBtn.textContent = "🔓 Bloqueador de Flechas: INACTIVO";
         lockKeysBtn.classList.remove("active-Lock");
       }
     });
   }
 
-  // Presionar tarjeta de salto con click
-  if (keyUpCard) {
+  if (keyUpCard && updownFeedback) {
     keyUpCard.addEventListener("click", () => {
-      playSynthSound(280, 0.22, "triangle");
-      if (jumpFeedback) {
-        jumpFeedback.textContent = "¡PROBADO! Impulso de salto vertical simulado.";
-        setTimeout(() => jumpFeedback.textContent = "Postura: ¡Elevación sobre el suelo! Sutil sonido de impulso.", 1500);
-      }
+      updownFeedback.textContent = "¡Probado! Salto / Agache (Juego 1) y avance vertical (Juego 2).";
     });
   }
 
-  // Presionar tarjeta de agacharse con click
-  if (keyDownCard) {
-    keyDownCard.addEventListener("click", () => {
-      playSynthSound(200, 0.28, "sawtooth");
-      if (slideFeedback) {
-        slideFeedback.textContent = "¡PROBADO! Agachado y reducción de área física simulados.";
-        setTimeout(() => slideFeedback.textContent = "Postura: ¡Tamaño reducido para pasar bajo objetos!", 1500);
-      }
+  if (keyLrCard && lrFeedback) {
+    keyLrCard.addEventListener("click", () => {
+      lrFeedback.textContent = "¡Probado! Giro lateral en los pasillos del Laberinto (Juego 2).";
     });
   }
 
-  // Soporte para uso real de Teclas
+  if (keyRCard && rFeedback) {
+    keyRCard.addEventListener("click", () => {
+      rFeedback.textContent = "¡Probado! Reinicio inmediato de partida en el Laberinto.";
+    });
+  }
+
   window.addEventListener(
     "keydown",
     (e) => {
-      if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
         if (lockArrowScroll) {
           e.preventDefault();
         }
       }
 
-      if (e.key === "ArrowUp" && keyUpCard) {
-        if (!keyUpCard.classList.contains("key-pressed")) {
-          keyUpCard.classList.add("key-pressed");
-          playSynthSound(280, 0.22, "triangle");
-          if (jumpFeedback) jumpFeedback.textContent = "¡ACTIVO! Yeti saltando obstáculos bajos.";
+      if ((e.key === "ArrowUp" || e.key === "ArrowDown") && keyUpCard) {
+        keyUpCard.classList.add("key-pressed");
+        if (updownFeedback) {
+          updownFeedback.textContent = `Tecla ${e.key === "ArrowUp" ? "↑" : "↓"} detectada correctamente.`;
         }
       }
-      if (e.key === "ArrowDown" && keyDownCard) {
-        if (!keyDownCard.classList.contains("key-pressed")) {
-          keyDownCard.classList.add("key-pressed");
-          playSynthSound(200, 0.28, "sawtooth");
-          if (slideFeedback) slideFeedback.textContent = "¡ACTIVO! Yeti encogido y seguro.";
+
+      if ((e.key === "ArrowLeft" || e.key === "ArrowRight") && keyLrCard) {
+        keyLrCard.classList.add("key-pressed");
+        if (lrFeedback) {
+          lrFeedback.textContent = `Tecla ${e.key === "ArrowLeft" ? "←" : "→"} detectada para el Laberinto.`;
+        }
+      }
+
+      if ((e.key === "r" || e.key === "R") && keyRCard) {
+        keyRCard.classList.add("key-pressed");
+        if (rFeedback) {
+          rFeedback.textContent = "Tecla R detectada: Reinicio rápido activo.";
         }
       }
     },
@@ -166,114 +131,108 @@ document.addEventListener("DOMContentLoaded", () => {
   );
 
   window.addEventListener("keyup", (e) => {
-    if (e.key === "ArrowUp" && keyUpCard) {
+    if ((e.key === "ArrowUp" || e.key === "ArrowDown") && keyUpCard) {
       keyUpCard.classList.remove("key-pressed");
-      if (jumpFeedback) jumpFeedback.textContent = "Postura: ¡Elevación sobre el suelo! Sutil sonido de impulso.";
     }
-    if (e.key === "ArrowDown" && keyDownCard) {
-      keyDownCard.classList.remove("key-pressed");
-      if (slideFeedback) slideFeedback.textContent = "Postura: ¡Tamaño reducido para pasar bajo objetos!";
+    if ((e.key === "ArrowLeft" || e.key === "ArrowRight") && keyLrCard) {
+      keyLrCard.classList.remove("key-pressed");
+    }
+    if ((e.key === "r" || e.key === "R") && keyRCard) {
+      keyRCard.classList.remove("key-pressed");
     }
   });
 
-  // 4. Simulador interactivo de puntuación (UX Hero card)
-  const simulatePointsBtn = document.getElementById("btn-simulate-points");
-  const heroScoreCounter = document.getElementById("hero-score-counter");
-  let simulatedScore = 0;
+  // 3. Control de Inicio Explícito (Botones START Juego 1 y Juego 2 - GED 26)
+  function setupGameStartControl(btnId, iframeId, overlayId, statusTextId, dotId, gameName) {
+    const startBtn = document.getElementById(btnId);
+    const iframe = document.getElementById(iframeId);
+    const overlay = document.getElementById(overlayId);
+    const statusText = document.getElementById(statusTextId);
+    const statusDot = document.getElementById(dotId);
+    let isLoaded = false;
 
-  if (simulatePointsBtn && heroScoreCounter) {
-    simulatePointsBtn.addEventListener("click", () => {
-      simulatedScore += 100;
-      if (simulatedScore >= 1000) {
-        heroScoreCounter.textContent = `${simulatedScore} / 1000 ¡GANASTE! 🎉`;
-        heroScoreCounter.style.color = "#2ecc71";
-        playSynthSound(440, 0.4, "triangle");
-        setTimeout(() => {
-          simulatedScore = 0;
-          heroScoreCounter.textContent = "0 / 1000";
-          heroScoreCounter.style.color = "";
-        }, 3000);
-      } else {
-        heroScoreCounter.textContent = `${simulatedScore} / 1000`;
-        playSynthSound(520, 0.1, "triangle");
-      }
-    });
-  }
-
-  // 5. NUEVA INTERACTIVIDAD: Simulador de Preguntas de Examen (Estudio grupal de defensa)
-  const btnGenerateChallenge = document.getElementById("btn-generate-challenge");
-  const challengeDisplay = document.getElementById("challenge-display");
-  const answerDisplay = document.getElementById("answer-display");
-
-  // Lista de preguntas de examen basadas en la rúbrica oficial (con lenguaje simple sin tecnicismos)
-  const examChallenges = [
-    {
-      challenge: "📢 EXAMEN DEFENSA: El profesor te pide 'Reducir la velocidad general de movimiento del Yeti y de la pista para facilitar la supervivencia'. ¿Cómo lo logras?",
-      answer: "💡 RESPUESTA: Dirígete al script del gestor de juego en Unity (GameManager) y disminuye el valor de la variable pública 'Velocidad General' en el inspector. Esto reducirá de inmediato la velocidad a la que se desplaza la pista o los obstáculos hacia el personaje."
-    },
-    {
-      challenge: "📢 EXAMEN DEFENSA: El profesor solicita 'Modificar el tiempo de duración o la agilidad de la postura del Yeti al agacharse'. ¿Cómo se ajusta?",
-      answer: "💡 RESPUESTA: En el script del personaje, localiza la función que se activa al presionar la tecla Flecha Abajo. Modifica el tiempo que dura la animación en el 'Animator Controller' o el valor que reduce temporalmente el tamaño del detector de impactos (nuestro indicador de altura)."
-    },
-    {
-      challenge: "📢 EXAMEN DEFENSA: El evaluador te dice 'Incrementar o reducir la cantidad de vidas iniciales que tiene el estudiante para la partida'. ¿Cómo se altera?",
-      answer: "💡 RESPUESTA: Accede al objeto del 'Game Manager' en tu jerarquía de Unity. En la sección de configuración del componente, busca el campo público llamado 'Vidas Iniciales' y cambia su valor de 3 a 5 (para hacerlo más fácil) o a 1 (para muerte súbita)."
-    },
-    {
-      challenge: "📢 EXAMEN DEFENSA: El profesor pide 'Alterar la altura del salto del personaje al presionar la flecha arriba'. ¿Qué variable ajustas?",
-      answer: "💡 RESPUESTA: En el componente del personaje, localiza la variable de 'Fuerza de Salto' (Jump Force) en el script de movimiento y eleva su valor numérico en el inspector para que supere con mayor soltura obstáculos más altos."
-    },
-    {
-      challenge: "📢 EXAMEN DEFENSA: El evaluador quiere 'Ajustar la frecuencia con la que aparecen las mochilas o letreros'. ¿Qué modificas?",
-      answer: "💡 RESPUESTA: Ve al objeto del Generador (Spawner) en la jerarquía. En su componente, altera las variables de tiempo mínimo y máximo entre apariciones. Disminuir estos valores provocará que los obstáculos salgan más seguido, elevando la dificultad."
-    },
-    {
-      challenge: "📢 EXAMEN DEFENSA: El profesor te pide 'Cambiar la cantidad de puntos que se otorgan al jugador por cada segundo de carrera'. ¿Cómo se modifica?",
-      answer: "💡 RESPUESTA: Abre el script de puntuación en Unity y cambia el valor de aumento dentro de la función que corre con el tiempo de juego, o modifica la variable pública 'Puntos Por Segundo' desde el inspector."
+    if (startBtn && iframe && overlay) {
+      startBtn.addEventListener("click", () => {
+        const targetSrc = iframe.getAttribute("data-src");
+        if (!isLoaded) {
+          iframe.setAttribute("src", targetSrc);
+          overlay.classList.add("hidden");
+          startBtn.textContent = "↻ REINICIAR " + gameName;
+          startBtn.classList.add("running");
+          if (statusText) {
+            statusText.innerHTML = `Estado ${gameName}: <strong>En ejecución dentro del portal</strong>`;
+          }
+          if (statusDot) {
+            statusDot.classList.add("active");
+          }
+          isLoaded = true;
+        } else {
+          iframe.setAttribute("src", targetSrc);
+        }
+      });
     }
-  ];
+  }
 
-  if (btnGenerateChallenge && challengeDisplay && answerDisplay) {
-    btnGenerateChallenge.addEventListener("click", () => {
-      // Sorteo aleatorio de una pregunta
-      const randomIndex = Math.floor(Math.random() * examChallenges.length);
-      const selected = examChallenges[randomIndex];
+  setupGameStartControl(
+    "btn-start-game1",
+    "unity-iframe-1",
+    "standby-overlay-1",
+    "status-text-1",
+    "status-dot-1",
+    "JUEGO 1"
+  );
 
-      // Animación de carga rápida (efecto de sorteo)
-      challengeDisplay.textContent = "Sorteando pregunta de defensa...";
-      answerDisplay.style.display = "none";
-      playSynthSound(600, 0.08, "triangle");
+  setupGameStartControl(
+    "btn-start-game2",
+    "unity-iframe-2",
+    "standby-overlay-2",
+    "status-text-2",
+    "status-dot-2",
+    "JUEGO 2"
+  );
 
-      setTimeout(() => {
-        challengeDisplay.textContent = selected.challenge;
-        answerDisplay.textContent = selected.answer;
-        answerDisplay.style.display = "block";
-        playSynthSound(520, 0.15, "triangle");
-      }, 400);
+  // 4. Modo Teatro y Pantalla Completa para ambos contenedores WebGL
+  const theaterBtn1 = document.getElementById("btn-theater");
+  const fullscreenBtn1 = document.getElementById("btn-fullscreen");
+  const webglContainer1 = document.getElementById("webgl-container");
+
+  if (theaterBtn1 && webglContainer1) {
+    theaterBtn1.addEventListener("click", () => {
+      webglContainer1.classList.toggle("theater-mode");
     });
   }
 
-  // 6. Controles WebGL y visualización Lightbox (Zoom)
-  const theaterBtn = document.getElementById("btn-theater");
-  const fullscreenBtn = document.getElementById("btn-fullscreen");
-  const webglContainer = document.getElementById("webgl-container");
-
-  if (theaterBtn && webglContainer) {
-    theaterBtn.addEventListener("click", () => {
-      webglContainer.classList.toggle("theater-mode");
-    });
-  }
-
-  if (fullscreenBtn && webglContainer) {
-    fullscreenBtn.addEventListener("click", () => {
-      if (webglContainer.requestFullscreen) {
-        webglContainer.requestFullscreen();
-      } else if (webglContainer.webkitRequestFullscreen) {
-        webglContainer.webkitRequestFullscreen();
+  if (fullscreenBtn1 && webglContainer1) {
+    fullscreenBtn1.addEventListener("click", () => {
+      if (webglContainer1.requestFullscreen) {
+        webglContainer1.requestFullscreen();
+      } else if (webglContainer1.webkitRequestFullscreen) {
+        webglContainer1.webkitRequestFullscreen();
       }
     });
   }
 
+  const theaterBtn2 = document.getElementById("btn-theater-2");
+  const fullscreenBtn2 = document.getElementById("btn-fullscreen-2");
+  const webglContainer2 = document.getElementById("webgl-container-2");
+
+  if (theaterBtn2 && webglContainer2) {
+    theaterBtn2.addEventListener("click", () => {
+      webglContainer2.classList.toggle("theater-mode");
+    });
+  }
+
+  if (fullscreenBtn2 && webglContainer2) {
+    fullscreenBtn2.addEventListener("click", () => {
+      if (webglContainer2.requestFullscreen) {
+        webglContainer2.requestFullscreen();
+      } else if (webglContainer2.webkitRequestFullscreen) {
+        webglContainer2.webkitRequestFullscreen();
+      }
+    });
+  }
+
+  // 5. Visor Lightbox para ampliar imágenes
   const zoomableImages = document.querySelectorAll(".zoomable-img");
   const lightboxModal = document.getElementById("lightbox-modal");
   const lightboxImg = document.getElementById("lightbox-img");
